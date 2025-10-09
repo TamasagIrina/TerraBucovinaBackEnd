@@ -2,10 +2,7 @@ package com.example.collaborationtest.controller;
 
 import com.example.collaborationtest.model.Plant;
 import com.example.collaborationtest.service.PlantService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,18 +20,19 @@ public class PlantController {
        return this.plantService.findAllPlants();
     }
 
-    @GetMapping("/getById")
-    public Plant getById(int id) {
+    @GetMapping("/getById/{id}")
+    public Plant getById(@RequestParam int id) {
         return this.plantService.findPlantById(id);
     }
 
-    @GetMapping("/getByProductId")
-    public List<Plant> getByProductId(int productId) {
+    @GetMapping("/getByProductId/{id}")
+    public List<Plant> getByProductId(@RequestParam int productId) {
         return this.plantService.findPlantProductById(productId);
     }
 
     @PostMapping("/add")
     public Plant addPlant(@RequestBody Plant plant) {
+        plant.setId(0);
         return this.plantService.addPlant(plant);
     }
 }

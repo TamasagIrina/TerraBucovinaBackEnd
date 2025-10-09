@@ -20,18 +20,19 @@ public class ProductController {
         return productService.getProducts();
     }
 
-    @GetMapping("/getById")
+    @GetMapping("/getById/{id}")
     public Product getProductsById(@RequestParam int id) {
         return productService.getProductById(id);
     }
 
-    @GetMapping("/getByName")
+    @GetMapping("/getByName/{name}")
     public Product getProductByName(@RequestParam String name) {
         return productService.getProductByName(name);
     }
 
     @PostMapping("/add")
     public Product addProduct(@RequestBody Product product) {
+        product.setId(0);
         return productService.addProduct(product);
     }
 

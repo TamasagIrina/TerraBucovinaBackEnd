@@ -19,7 +19,18 @@ public class ReviewService {
         return reviewRepo.findAllByProduct_Id(productId);
     }
 
+    public List<Review> findAll(){
+        return reviewRepo.findAll();
+    }
+
     public Review findById(int id) {
         return reviewRepo.findById(id).orElse(null);
+    }
+
+    public Review add (Review review) {
+        if (review.getId() == 0) {
+            return reviewRepo.save(review);
+        }
+        return null;
     }
 }

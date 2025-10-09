@@ -23,7 +23,7 @@ public class ImageService {
         return imageRepo.findById(id).get();
     }
 
-    public Image save(Image image) {
+    public Image add(Image image) {
         if(getImageById(image.getId())==null) {
             return imageRepo.save(image);
         }

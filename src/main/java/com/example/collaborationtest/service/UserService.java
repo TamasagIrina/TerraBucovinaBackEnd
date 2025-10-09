@@ -35,7 +35,13 @@ public class UserService {
     }
 
     public User getUser(String username) {
+
         return userRepo.findByUsername(username);
+    }
+
+    public int getIdByName(String name) {
+        User user = this.getUser(name);
+        return user.getId();
     }
 
     public User createUser(User user) {
