@@ -22,11 +22,6 @@ public class UserController {
     }
 
 
-    @GetMapping("/")
-    public String home() {
-        return "Hello World";
-    }
-
 //    @PostMapping("/login")
 //    public String login(@RequestBody User user) {
 //        System.out.println("login");
