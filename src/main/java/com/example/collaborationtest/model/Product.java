@@ -32,6 +32,9 @@ public class Product {
     @Column(name = "short_desc", length = 500)
     private String shortDesc;
 
+    @Column(name = "long_desc", length = 1000)
+    private String longDesc;
+
     @Column(length = 100)
     private String category;
 

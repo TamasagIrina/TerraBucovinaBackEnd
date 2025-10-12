@@ -8,8 +8,11 @@ import java.util.List;
 public class PlantService {
     public PlantRepo plantRepo;
 
+
+
     public PlantService(PlantRepo plantRepo) {
         this.plantRepo = plantRepo;
+
     }
 
     public Plant findPlantById(int id) {
@@ -49,4 +52,16 @@ public class PlantService {
     }
 
 
+    public Plant updatePlant(Plant plant) {
+        Plant oldPlant = findPlantById(plant.getId());
+        oldPlant.setName(plant.getName());
+        oldPlant.setDescription(plant.getDescription());
+        oldPlant.setBenefit(plant.getBenefit());
+        return plantRepo.save(oldPlant);
+    }
+
+    public void deletePlant(int id) {
+        Plant oldPlant = findPlantById(id);
+        plantRepo.delete(oldPlant);
+    }
 }

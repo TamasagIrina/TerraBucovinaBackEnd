@@ -10,6 +10,8 @@ import java.util.List;
 public class ProductController {
 
     private ProductService productService;
+
+
     public ProductController(ProductService productService) {
         this.productService = productService;
 
@@ -34,6 +36,16 @@ public class ProductController {
     public Product addProduct(@RequestBody Product product) {
         product.setId(0);
         return productService.addProduct(product);
+    }
+
+    @PutMapping("/update")
+    public Product updateProduct(@RequestBody Product product) {
+        return productService.updateProduct(product);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteProduct(@RequestBody int id) {
+        productService.deleteProduct(id);
     }
 
 

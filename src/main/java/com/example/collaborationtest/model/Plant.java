@@ -25,6 +25,9 @@ public class Plant {
     @Column(nullable = false, length = 200)
     private String name;
 
+    @Column( length = 500)
+    private String imageUrl;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 

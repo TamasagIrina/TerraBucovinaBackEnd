@@ -32,4 +32,22 @@ public class ProductService {
 
         return productRepo.save(product);
     }
+
+    public Product updateProduct(Product product) {
+        Product product1= getProductById(product.getId());
+        product1.setName(product.getName());
+        product1.setPrice(product.getPrice());
+        product1.setUpdatedAt(product.getUpdatedAt());
+        product1.setLongDesc(product.getLongDesc());
+        product1.setShortDesc(product.getShortDesc());
+
+        return productRepo.save(product1);
+
+    }
+
+    public Product deleteProduct(int id) {
+        Product product1= getProductById(id);
+        productRepo.delete(product1);
+        return product1;
+    }
 }
