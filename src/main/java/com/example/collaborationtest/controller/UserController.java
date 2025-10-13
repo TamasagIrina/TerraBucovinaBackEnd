@@ -1,15 +1,14 @@
 package com.example.collaborationtest.controller;
 
+import com.example.collaborationtest.enums.Role;
 import com.example.collaborationtest.model.User;
 import com.example.collaborationtest.repository.UserRepo;
 import com.example.collaborationtest.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class UserController {
@@ -40,7 +39,12 @@ public class UserController {
     }
 
     @GetMapping("/userId/{name}")
-    public int getUserByName(@RequestBody String name) {
+    public int getUserByName(@PathVariable String name) {
         return userService.getIdByName(name);
+    }
+
+    @GetMapping("/getRole/{name}")
+    public Set<Role> getRole(@PathVariable String name) {
+        return userService.getRole(name);
     }
 }

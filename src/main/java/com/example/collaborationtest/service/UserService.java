@@ -1,5 +1,6 @@
 package com.example.collaborationtest.service;
 
+import com.example.collaborationtest.enums.Role;
 import com.example.collaborationtest.model.User;
 import com.example.collaborationtest.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -70,5 +72,11 @@ public class UserService {
         }
 
         return "Verification failed";
+    }
+
+    public Set<Role> getRole(String username) {
+        User user = this.getUser(username);
+        return user.getRoles();
+
     }
 }

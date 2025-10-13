@@ -60,6 +60,6 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid username or password");
         }
 
-        return ResponseEntity.ok("uuhiewh" +token);
+        return ResponseEntity.ok(token);
     }
 }
