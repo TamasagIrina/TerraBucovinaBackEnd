@@ -13,12 +13,12 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/get/all")
     public List<Review> getAll() {
         return reviewService.findAll();
     }
 
-    @GetMapping("/getAllByProductId/{id}")
+    @GetMapping("/get/allByProductId/{id}")
     public List<Review> getAllByProductId(@PathVariable int id) {
         return reviewService.findAllByProduct_Id(id);
     }

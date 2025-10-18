@@ -2,9 +2,11 @@ package com.example.collaborationtest.service;
 
 import com.example.collaborationtest.model.Product;
 import com.example.collaborationtest.repository.ProductRepo;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ProductService {
 
     private ProductRepo productRepo;

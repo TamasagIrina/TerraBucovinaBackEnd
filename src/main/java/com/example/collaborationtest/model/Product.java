@@ -1,6 +1,7 @@
 package com.example.collaborationtest.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,12 +22,13 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
     private int id;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "name",nullable = false, length = 200)
     private String name;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(name = "price",nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
     @Column(name = "short_desc", length = 500)
@@ -46,11 +48,11 @@ public class Product {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private Instant createdAt;
+    private String createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private String updatedAt;
 
     // --- RELAȚII ---
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)

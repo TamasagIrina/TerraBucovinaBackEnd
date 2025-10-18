@@ -1,5 +1,6 @@
 package com.example.collaborationtest.config;
 
+import com.example.collaborationtest.service.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,31 +33,32 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @Autowired
-    private JWTFilter jwtFilter;
 
+    private final JWTFilter jwtFilter;
 
-
+    public SecurityConfig(JWTFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/store/**").permitAll()
-                                .requestMatchers("/api/auth/**").permitAll()
+            return http
+                    .csrf(AbstractHttpConfigurer::disable)
+                    .cors(Customizer.withDefaults())
+                    .authorizeHttpRequests(authorizeRequests ->
+                            authorizeRequests
+                                    .requestMatchers(HttpMethod.GET, "/api/products/get/**", "/api/products/reviews/**").permitAll()
+                                    .requestMatchers("/api/auth/**").permitAll()
 
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                    .requestMatchers("/api/products/admin/**").hasRole("ADMIN")
 
-                                .requestMatchers("/api/user/**").hasRole("USER")
+                                    .requestMatchers("/api/user/**").hasRole("USER")
 
-                                .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                                    .anyRequest().authenticated())
+                    .httpBasic(Customizer.withDefaults())
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                    .build();
 
     }
 
@@ -85,7 +87,7 @@ public class SecurityConfig {
         c.setAllowedOrigins(List.of("http://localhost:4200"));
         c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
         c.setAllowedHeaders(List.of("*")); // sau listă explicită: content-type, authorization
-        c.setAllowCredentials(true);
+//        c.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource s = new UrlBasedCorsConfigurationSource();
         s.registerCorsConfiguration("/**", c);
         return s;

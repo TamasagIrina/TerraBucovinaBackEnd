@@ -54,10 +54,9 @@ public class AuthController {
         vrfUser.setPassword(user.getPassword());
 
         String token = userService.verify(vrfUser);
-        System.out.println(token);
-        if ("Verification failed".equals(token)) {
 
-            return ResponseEntity.status(401).body("Invalid username or password");
+        if ("Verification failed".equals(token)) {
+            return ResponseEntity.ok("Invalid username or password");
         }
 
         return ResponseEntity.ok(token);

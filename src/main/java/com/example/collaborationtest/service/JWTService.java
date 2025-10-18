@@ -24,17 +24,6 @@ public class JWTService {
     @Value("${app.jwt.expiration-ms}")
     private long jwtExpirationMs;
 
-    private String secretKey;
-
-    public JWTService() {
-        try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("hmacSHA256");
-            SecretKey key = keyGenerator.generateKey();
-            secretKey = Base64.getEncoder().encodeToString(key.getEncoded());
-        }catch (Exception e) {
-            System.out.println("Error creating a secret key");
-        }
-    }
 
     public String generateToken(UserDetails userDetails) {
 
@@ -58,11 +47,9 @@ public class JWTService {
     }
 
     private SecretKey getKey() {
-        Base64.Decoder decoder = Base64.getDecoder();
-        byte[] keyBytes = decoder.decode(secretKey);
+        byte[] keyBytes = Base64.getDecoder().decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
     public String extractUsername(String token) {
         // extract the username from jwt token
         return extractClaim(token, Claims::getSubject);
@@ -83,6 +70,7 @@ public class JWTService {
 
     public boolean validateToken(String token, UserDetails userDetails) {
         final String userName = extractUsername(token);
+        System.out.println("AAAAAA" + (userName.equals(userDetails.getUsername()) && !isTokenExpired(token)));
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
