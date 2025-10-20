@@ -2,9 +2,10 @@ package com.example.collaborationtest.service;
 
 import com.example.collaborationtest.model.Image;
 import com.example.collaborationtest.repository.ImageRepo;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class ImageService {
 
     private ImageRepo imageRepo;
@@ -24,10 +25,8 @@ public class ImageService {
     }
 
     public Image add(Image image) {
-        if(getImageById(image.getId())==null) {
             return imageRepo.save(image);
-        }
-        return null;
+
     }
 
     public void delete(int id) {

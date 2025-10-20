@@ -1,6 +1,7 @@
 package com.example.collaborationtest.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,14 +57,14 @@ public class Product {
 
     // --- RELAȚII ---
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<Plant> plants = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
+    @JsonBackReference
     private List<Image> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<Review> reviews = new ArrayList<>();
 }

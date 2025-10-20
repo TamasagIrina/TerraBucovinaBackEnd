@@ -1,5 +1,7 @@
 package com.example.collaborationtest.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +19,7 @@ public class Image {
     // (Many) -> (One) Product
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
+    @JsonBackReference
     private Product product;
 
     @Column(name = "image_url", nullable = false, length = 500)

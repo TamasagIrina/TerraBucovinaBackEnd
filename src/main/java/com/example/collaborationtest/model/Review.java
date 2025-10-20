@@ -2,6 +2,7 @@ package com.example.collaborationtest.model;
 
 
 import com.example.collaborationtest.enums.ReviewStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -27,13 +28,13 @@ public class Review {
     // (Many) -> (One) Product
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Product product;
 
     // (Many) -> (One) User (clasa ta existentă)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private User user;
 
     @Column(length = 200)

@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-
+@RestController
 @RequestMapping("/api/products/images")
 public class ImageController {
 
@@ -24,11 +24,12 @@ public class ImageController {
         this.storage = storage;
     }
 
-    @GetMapping("/getByProductId/{id}")
-    public List<Image> getAllImgByProducId(@RequestParam int productId) {
+    @GetMapping("/get/ByProductId/{productId}")
+    public List<Image> getAllImgByProducId(@PathVariable int productId) {
         return imageService.findAllByProduct_Id(productId);
     }
-    @GetMapping("/upload")
+
+    @PostMapping("/auth/upload")
     public Image upload(
             @RequestParam int productId,
             @RequestPart("file") MultipartFile file,
@@ -38,6 +39,8 @@ public class ImageController {
     ) throws IOException {
 
         var stored = storage.saveProductImage(productId, file);
+
+
 
         Image img = Image.builder()
                 .product(Product.builder().id(productId).build())
