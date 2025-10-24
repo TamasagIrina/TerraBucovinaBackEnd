@@ -29,6 +29,12 @@ public class ImageController {
         return imageService.findAllByProduct_Id(productId);
     }
 
+    @GetMapping("/get/all")
+    public List<Image> getAll(){
+        return imageService.findAll();
+    }
+
+
     @PostMapping("/auth/upload")
     public Image upload(
             @RequestParam int productId,

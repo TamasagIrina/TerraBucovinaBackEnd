@@ -7,20 +7,24 @@ import lombok.*;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-@ToString
 @Builder
 @Entity
 @Table(name = "images")
+
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+
     // (Many) -> (One) Product
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private Product product;
+
+    @Transient
+    private int productId;
 
     @Column(name = "image_url", nullable = false, length = 500)
     private String imageUrl;
@@ -33,4 +37,11 @@ public class Image {
 
     @Column(name = "is_primary")
     private Boolean isPrimary = Boolean.FALSE;
+
+    @PostLoad
+    private void onLoad() {
+        if (product != null) {
+            this.productId =  product.getId();
+        }
+    }
 }

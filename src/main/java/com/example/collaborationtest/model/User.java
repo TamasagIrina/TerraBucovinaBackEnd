@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -35,5 +36,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
     private boolean enabled = true;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
 
 }

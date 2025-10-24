@@ -16,7 +16,6 @@ import java.util.List;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-@ToString
 @Builder
 @Entity
 @Table(name = "products")
@@ -61,7 +60,7 @@ public class Product {
     private List<Plant> plants = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+    @JsonIgnore
     private List<Image> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)

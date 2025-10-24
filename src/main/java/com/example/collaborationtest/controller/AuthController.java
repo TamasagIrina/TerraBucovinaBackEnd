@@ -2,6 +2,7 @@ package com.example.collaborationtest.controller;
 
 import com.example.collaborationtest.enums.Role;
 import com.example.collaborationtest.model.User;
+import com.example.collaborationtest.service.EmailService;
 import com.example.collaborationtest.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -19,11 +20,14 @@ public class AuthController {
 
     private final UserService userService;
 
+    private final EmailService emailService;
+
     private final PasswordEncoder encoder;
 
-    public AuthController(UserService userService, PasswordEncoder encoder) {
+    public AuthController(UserService userService, PasswordEncoder encoder, EmailService emailService) {
         this.userService = userService;
         this.encoder = encoder;
+        this.emailService = emailService;
 
     }
 
@@ -38,11 +42,31 @@ public class AuthController {
         newUser.setRoles(   Collections.singleton(Role.USER)); // default role
         newUser.setEnabled(true);
 
+        String domainPart = user.getEmail().split("@")[1];
+        String provider = domainPart.split("\\.")[0];
+
         User savedUser = userService.createUser(newUser);
         if (savedUser == null) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
+        String emailContent = """
+    <html>
+        <head>
+            <meta charset="UTF-8">
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2 style="color: #2c3e50;">Salut <b>%s</b>!</h2>
+            <p>Contul tau a fost creat cu succes.</p>
+            <p style="margin-top: 20px;">
+                Iti mulțumim ca ti-ai facut cont la <strong>Terra Bucovina</strong>!<br>
+                Ne bucuram să te avem în comunitatea noastra.
+            </p>
+            <p style="margin-top: 30px;">Echipa Terra Bucovina</p>
+        </body>
+    </html>
+""".formatted(user.getUsername());
 
+        emailService.sendEmail(user.getEmail(), "Confirmare cont", emailContent, provider);
         return ResponseEntity.ok("User registered successfully");
     }
 

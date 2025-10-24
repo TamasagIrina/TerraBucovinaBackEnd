@@ -20,6 +20,10 @@ public class ImageService {
             return null;
     }
 
+    public List<Image> findAll() {
+        return imageRepo.findAll();
+    }
+
     public Image getImageById(int id) {
         return imageRepo.findById(id).get();
     }
