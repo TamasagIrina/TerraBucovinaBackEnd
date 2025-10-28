@@ -35,20 +35,22 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register( @RequestBody User user) {
         // Create new user via UserService
-        User newUser = new User();
-        newUser.setUsername(user.getUsername());
-        newUser.setEmail(user.getEmail());
-        newUser.setPassword(user.getPassword());
-        newUser.setRoles(   Collections.singleton(Role.USER)); // default role
-        newUser.setEnabled(true);
+
+       if (this.userService.getUser(user.getEmail())==null){
+           User newUser = new User();
+           newUser.setUsername(user.getUsername());
+           newUser.setEmail(user.getEmail());
+           newUser.setPassword(user.getPassword());
+           newUser.setRoles(   Collections.singleton(Role.USER)); // default role
+           newUser.setEnabled(true);
+           User savedUser = userService.createUser(newUser);
+           if (savedUser == null) {
+               return ResponseEntity.badRequest().body("Username already exists");
+           }
+       }
 
         String domainPart = user.getEmail().split("@")[1];
         String provider = domainPart.split("\\.")[0];
-
-        User savedUser = userService.createUser(newUser);
-        if (savedUser == null) {
-            return ResponseEntity.badRequest().body("Username already exists");
-        }
         String emailContent = """
     <html>
         <head>
@@ -58,8 +60,8 @@ public class AuthController {
             <h2 style="color: #2c3e50;">Salut <b>%s</b>!</h2>
             <p>Contul tau a fost creat cu succes.</p>
             <p style="margin-top: 20px;">
-                Iti mulțumim ca ti-ai facut cont la <strong>Terra Bucovina</strong>!<br>
-                Ne bucuram să te avem în comunitatea noastra.
+                Iti multumim ca ti-ai facut cont la <strong>Terra Bucovina</strong>!<br>
+                Ne bucuram sa te avem în comunitatea noastra.
             </p>
             <p style="margin-top: 30px;">Echipa Terra Bucovina</p>
         </body>
@@ -72,10 +74,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login( @RequestBody User user) {
-        System.out.println(user.getUsername());
+
         User vrfUser = new User();
-        vrfUser.setUsername(user.getUsername());
+        vrfUser.setEmail(user.getEmail());
         vrfUser.setPassword(user.getPassword());
+        vrfUser.setUsername(this.userService.getUser(user.getEmail()).getUsername());
+       
 
         String token = userService.verify(vrfUser);
 

@@ -14,10 +14,26 @@ public class ImageService {
     }
 
     public List<Image> findAllByProduct_Id(int productId) {
-            if( imageRepo.findAllByProduct_Id(productId).size() > 0 ) {
+            if(!imageRepo.findAllByProduct_Id(productId).isEmpty()) {
                 return imageRepo.findAllByProduct_Id(productId);
             }
             return null;
+    }
+
+    public Image findPrimaryByProduct_Id(int productId) {
+        List<Image> images = findAllByProduct_Id(productId);
+
+        if (images == null || images.isEmpty()) {
+            return null;
+        }
+
+        for (Image image : images) {
+            if (Boolean.TRUE.equals(image.getIsPrimary())) {
+                return image;
+            }
+        }
+
+        return null;
     }
 
     public List<Image> findAll() {

@@ -27,4 +27,6 @@ public class EmailController {
         return ResponseEntity.ok("Email trimis prin " + provider);
     }
 
+
+
 }

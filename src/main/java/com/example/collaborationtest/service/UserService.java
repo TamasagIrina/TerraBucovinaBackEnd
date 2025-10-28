@@ -36,13 +36,12 @@ public class UserService {
         return userRepo.findAll();
     }
 
-    public User getUser(String username) {
-
-        return userRepo.findByUsername(username);
+    public User getUser(String email) {
+        return userRepo.findByEmail(email);
     }
 
-    public int getIdByName(String name) {
-        User user = this.getUser(name);
+    public int getIdByEmail(String email) {
+        User user = this.getUser(email);
         return user.getId();
     }
 
@@ -64,7 +63,7 @@ public class UserService {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        System.out.println(userDetails.getUsername());
+
         if(authentication.isAuthenticated()) {
             System.out.println("MERGE");
 
@@ -78,5 +77,12 @@ public class UserService {
         User user = this.getUser(username);
         return user.getRoles();
 
+    }
+
+    public User deleteUser(String email) {
+        User user = this.getUser(email);
+        System.out.println("Trying to delete user with email: " + email);
+        userRepo.delete(user);
+        return user;
     }
 }

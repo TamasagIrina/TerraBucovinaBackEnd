@@ -39,12 +39,18 @@ public class UserController {
     }
 
     @GetMapping("/userId/{name}")
-    public int getUserByName(@PathVariable String name) {
-        return userService.getIdByName(name);
+    public int getUserByName(@PathVariable String email) {
+        return userService.getIdByEmail(email);
     }
 
     @GetMapping("/getRole/{name}")
     public Set<Role> getRole(@PathVariable String name) {
         return userService.getRole(name);
+    }
+
+    @DeleteMapping("/user/delete/{email:.+}")
+    public void deleteUser(@PathVariable String email) {
+        System.out.println("Trying to delete user with email: " + email);
+        userService.deleteUser(email);
     }
 }

@@ -13,9 +13,9 @@ import lombok.*;
 public class OrderProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
-    private Long productId;
+    private int productId;
     private Integer quantity;
 
     @ManyToOne
