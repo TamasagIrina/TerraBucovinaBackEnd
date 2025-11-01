@@ -1,6 +1,7 @@
 package com.example.collaborationtest.model;
 
 import com.example.collaborationtest.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -51,6 +52,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
+    @JsonIgnore
     private User user;
 
 }
