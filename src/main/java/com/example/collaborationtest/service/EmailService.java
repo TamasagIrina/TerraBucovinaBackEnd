@@ -82,8 +82,8 @@ public class EmailService {
         List<EmailProducts> productDetails = new ArrayList<>();
 
         for (OrderProduct op : order.getProducts()) {
-            Product product = productService.getProductById(op.getProductId());
-            Image image = imageService.findPrimaryByProduct_Id(op.getProductId());
+            Product product = productService.getProductById(op.getProduct().getId());
+            Image image = imageService.findPrimaryByProduct_Id(op.getProduct().getId());
 
             EmailProducts dto = new EmailProducts(
                     product.getName(),

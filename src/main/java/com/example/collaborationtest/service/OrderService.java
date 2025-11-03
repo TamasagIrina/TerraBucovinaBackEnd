@@ -4,6 +4,7 @@ import com.example.collaborationtest.enums.OrderStatus;
 import com.example.collaborationtest.model.Order;
 import com.example.collaborationtest.model.OrderProduct;
 import com.example.collaborationtest.repository.OrderRepo;
+import com.example.collaborationtest.repository.ProductRepo;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,12 @@ public class OrderService {
 
     private OrderProductService orderProductService;
 
-    public OrderService(OrderRepo orderRepo, OrderProductService orderProductService) {
+    private final ProductRepo productRepo;
+
+    public OrderService(OrderRepo orderRepo, OrderProductService orderProductService, ProductRepo productRepo) {
         this.orderRepo = orderRepo;
         this.orderProductService = orderProductService;
+        this.productRepo = productRepo;
 
     }
 
@@ -42,12 +46,20 @@ public class OrderService {
 
 
     public Order saveOrder(Order order) {
-        if (order.getProducts() != null) {
-            for (OrderProduct product : order.getProducts()) {
-                product.setOrder(order);
-            }
-        }
-        return this.orderRepo.save(order);
+        order.setId(null);
+        order.setStatus(OrderStatus.PLASATA);
+        order.setCreatedAt(null);
+
+        order.getProducts().forEach(op -> {
+            Integer productId = op.getProduct().getId();
+            op.setProduct(productRepo.findById(productId)
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + productId)));
+
+
+            op.setOrder(order);
+        });
+
+        return orderRepo.save(order);
     }
 
     public Order updateOrderStatus(int id, OrderStatus status) {

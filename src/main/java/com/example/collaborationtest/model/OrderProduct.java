@@ -1,5 +1,6 @@
 package com.example.collaborationtest.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,12 +17,15 @@ public class OrderProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int productId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_id")
+    private Product product;
+
     private Integer quantity;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
-    @JsonIgnore
+    @JsonBackReference
     private Order order;
 
 }

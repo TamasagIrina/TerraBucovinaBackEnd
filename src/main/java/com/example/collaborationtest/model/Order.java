@@ -2,6 +2,7 @@ package com.example.collaborationtest.model;
 
 import com.example.collaborationtest.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -48,6 +49,7 @@ public class Order {
     private OrderStatus status = OrderStatus.PLASATA;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<OrderProduct> products;
 
     @ManyToOne
