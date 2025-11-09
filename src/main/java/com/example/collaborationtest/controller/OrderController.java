@@ -4,6 +4,7 @@ import com.example.collaborationtest.enums.OrderStatus;
 import com.example.collaborationtest.model.Order;
 import com.example.collaborationtest.service.EmailService;
 import com.example.collaborationtest.service.OrderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
@@ -36,27 +37,27 @@ public class OrderController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>>  addOrder(@RequestBody Order order){
+    public ResponseEntity<Order> addOrder(@RequestBody Order order){
 
         Order newOrder = orderService.saveOrder(order);
 
-        Map<String, Object> response = new HashMap<>();
-
         if(newOrder==null){
-            response.put("success", false);
-            response.put("message", "Comanda nu a putut fi înregistrată, încercați din nou!");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         emailService.sendOrderConfirmationEmail(newOrder);
 
-        response.put("success", true);
-        response.put("message", "Comanda a fost trimisă cu succes!");
-        response.put("order", newOrder);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(newOrder);
     }
 
     @PutMapping("/updateStatus/{id}/{orderStatus}")
     public Order updateStatus(@PathVariable int id, @PathVariable OrderStatus orderStatus){
             return orderService.updateOrderStatus(id,orderStatus);
+    }
+
+    @GetMapping("/can-review/{userId}/{productId}")
+    public boolean canUserReview(@PathVariable int userId, @PathVariable int productId) {
+        return orderService.hasUserPurchasedProduct(userId, productId);
     }
 }

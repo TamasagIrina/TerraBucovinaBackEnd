@@ -1,6 +1,7 @@
 package com.example.collaborationtest.model;
 
 import com.example.collaborationtest.enums.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -38,6 +39,8 @@ public class User {
     private boolean enabled = true;
 
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private List<Order> orders;
+
 
 }

@@ -33,7 +33,7 @@ public class Review {
 
     // (Many) -> (One) User (clasa ta existentă)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     @JsonIgnore
     private User user;
 

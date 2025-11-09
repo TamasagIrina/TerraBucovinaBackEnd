@@ -32,6 +32,11 @@ public class UserController {
         return userService.getUsers();
     }
 
+    @GetMapping("/user/{id}")
+    public User getUserById(@PathVariable int id) {
+        return userService.getUserById(id);
+    }
+
     @PostMapping("/addUser")
     public User addUser(@RequestBody User user) {
         user.setId(0);
@@ -39,8 +44,8 @@ public class UserController {
     }
 
     @GetMapping("/userId/{name}")
-    public int getUserByName(@PathVariable String email) {
-        return userService.getIdByEmail(email);
+    public int getUserByName(@PathVariable String name) {
+        return userService.getIdByUserName(name);
     }
 
     @GetMapping("/getRole/{name}")

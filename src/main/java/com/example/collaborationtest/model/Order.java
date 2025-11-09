@@ -1,6 +1,7 @@
 package com.example.collaborationtest.model;
 
 import com.example.collaborationtest.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -54,7 +55,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
-    @JsonIgnore
+    @JsonBackReference
     private User user;
 
 }
