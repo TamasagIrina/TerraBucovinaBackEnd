@@ -42,7 +42,6 @@ public class OrderController {
         Order newOrder = orderService.saveOrder(order);
 
         if(newOrder==null){
-
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 

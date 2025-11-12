@@ -30,9 +30,6 @@ public class ReviewService {
     }
 
     public Review add (Review review) {
-        if (review.getId() == 0) {
-            return reviewRepo.save(review);
-        }
-        return null;
+        return reviewRepo.save(review);
     }
 }

@@ -1,7 +1,7 @@
 package com.example.collaborationtest.model;
 
 
-import com.example.collaborationtest.enums.ReviewStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -24,21 +24,18 @@ public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    // (Many) -> (One) Product
+    
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference("product-review")
     private Product product;
 
-    // (Many) -> (One) User (clasa ta existentă)
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = true)
-    @JsonIgnore
+    @JsonBackReference("user-review")
     private User user;
 
-    @Column(length = 200)
-    private String title;
 
     @Column(columnDefinition = "TEXT")
     private String body;
@@ -51,7 +48,5 @@ public class Review {
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private ReviewStatus status = ReviewStatus.APPROVED;
+
 }
