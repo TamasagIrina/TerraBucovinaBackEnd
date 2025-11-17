@@ -1,7 +1,12 @@
 package com.example.collaborationtest.service;
 
+import com.example.collaborationtest.model.Product;
 import com.example.collaborationtest.model.Review;
+import com.example.collaborationtest.model.ReviewRequest;
+import com.example.collaborationtest.model.User;
+import com.example.collaborationtest.repository.ProductRepo;
 import com.example.collaborationtest.repository.ReviewRepo;
+import com.example.collaborationtest.repository.UserRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,8 +15,15 @@ import java.util.List;
 public class ReviewService {
 
     private ReviewRepo reviewRepo;
-    public ReviewService(ReviewRepo repo) {
+
+    private ProductRepo productRepo;
+
+    private UserRepo userRepo;
+
+    public ReviewService(ReviewRepo repo, ProductRepo productRepo, UserRepo userRepo) {
         this.reviewRepo = repo;
+        this.productRepo = productRepo;
+        this.userRepo = userRepo;
     }
 
     public List<Review> findAllByProduct_Id(int productId) {
@@ -29,7 +41,21 @@ public class ReviewService {
         return reviewRepo.findById(id).orElse(null);
     }
 
-    public Review add (Review review) {
+    public Review add(ReviewRequest req) {
+
+        Product product = productRepo.findById(req.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        User user = userRepo.findById(req.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Review review = Review.builder()
+                .product(product)
+                .user(user)
+                .body(req.getBody())
+                .stars(req.getStars())
+                .build();
+
         return reviewRepo.save(review);
     }
 }

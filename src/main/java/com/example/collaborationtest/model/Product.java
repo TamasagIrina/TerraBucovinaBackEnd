@@ -55,7 +55,7 @@ public class Product {
     @Column(name = "updated_at")
     private String updatedAt;
 
-    // --- RELAȚII ---
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Plant> plants = new ArrayList<>();
@@ -65,6 +65,6 @@ public class Product {
     private List<Image> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("product-review")
+    @JsonIgnore
     private List<Review> reviews = new ArrayList<>();
 }

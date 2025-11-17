@@ -1,6 +1,7 @@
 package com.example.collaborationtest.model;
 
 import com.example.collaborationtest.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,7 +44,7 @@ public class User {
     private List<Order> orders;
 
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference("user-review")
+    @JsonIgnore
     private List<Review> reviews;
 
 

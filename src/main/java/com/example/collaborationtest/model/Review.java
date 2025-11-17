@@ -16,10 +16,7 @@ import java.time.Instant;
 @ToString
 @Builder
 @Entity
-@Table(name = "reviews",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uq_review_user_product", columnNames = {"user_id","product_id"})
-        })
+@Table(name = "reviews")
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,14 +24,20 @@ public class Review {
     
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    @JsonBackReference("product-review")
+    @JsonIgnore
     private Product product;
 
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = true)
-    @JsonBackReference("user-review")
+    @JsonIgnore
     private User user;
+
+    @Column(name = "product_id", insertable = false, updatable = false)
+    private Integer productId;
+
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private Integer userId;
 
 
     @Column(columnDefinition = "TEXT")

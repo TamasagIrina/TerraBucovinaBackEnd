@@ -1,6 +1,7 @@
 package com.example.collaborationtest.controller;
 
 import com.example.collaborationtest.model.Review;
+import com.example.collaborationtest.model.ReviewRequest;
 import com.example.collaborationtest.service.ReviewService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +25,7 @@ public class ReviewController {
     }
 
     @PostMapping("/add")
-    public Review add(@RequestBody Review review) {
-        review.setId(0);
-        return reviewService.add(review);
+    public Review add(@RequestBody ReviewRequest request) {
+        return reviewService.add(request);
     }
 }
