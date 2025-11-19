@@ -48,16 +48,13 @@ public class EmailService {
     public void sendEmail(String to, String subject, String body, String provider) {
         JavaMailSender sender;
 
-        // Alegerea providerului
-        switch (provider.toLowerCase()) {
-            case "gmail":
-                sender = gmailSender;
-                break;
-            case "yahoo":
-                sender = yahooSender;
-                break;
-            default:
-                throw new IllegalArgumentException("Provider invalid: " + provider);
+
+        if (provider.toLowerCase().equals("gmail")) {
+            sender = gmailSender;
+        } else if (provider.toLowerCase().equals("yahoo")) {
+            sender = gmailSender;
+        } else {
+            throw new IllegalArgumentException("Provider invalid: " + provider);
         }
 
         try {
@@ -105,6 +102,24 @@ public class EmailService {
 
         String htmlBody = templateEngine.process("orderConfirmation", context);
         sendEmail(order.getEmail(), "Confirmare comanda – Terra Bucovina", htmlBody, provider);
+    }
+
+    public void sendContactResponseEmail(ContactUsMessages message) {
+        String domainPart = message.getEmail().split("@")[1];
+        String provider = domainPart.split("\\.")[0];
+
+        Context context = new Context();
+        context.setVariable("fullName", message.getName());
+        context.setVariable("messageContent", message.getMessage());
+
+        String htmlBody = templateEngine.process("addedMessageToContactUs", context);
+
+        sendEmail(
+                message.getEmail(),
+                "Masajul– Terra Bucovina",
+                htmlBody,
+                provider
+        );
     }
 
 

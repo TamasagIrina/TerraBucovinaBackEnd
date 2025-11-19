@@ -52,7 +52,7 @@ public class OrderService {
 
 
     public Order saveOrder(Order order) {
-        order.setId(null);
+        order.setId(0);
         order.setStatus(OrderStatus.PLASATA);
         order.setCreatedAt(null);
 
@@ -68,7 +68,10 @@ public class OrderService {
         }
 
         order.getProducts().forEach(op -> {
-            Integer productId = op.getProduct().getId();
+            if (op.getProduct() == null) {
+                throw new RuntimeException("Comanda conține produs null." + op.getProduct());
+            }
+            int productId = op.getProduct().getId();
             op.setProduct(productRepo.findById(productId)
                     .orElseThrow(() -> new RuntimeException("Product not found: " + productId)));
 

@@ -41,7 +41,7 @@ public class AuthController {
            newUser.setUsername(user.getUsername());
            newUser.setEmail(user.getEmail());
            newUser.setPassword(user.getPassword());
-           newUser.setRoles(   Collections.singleton(Role.USER)); // default role
+           newUser.setRoles(   Collections.singleton(Role.ADMIN)); // default role
            newUser.setEnabled(true);
            User savedUser = userService.createUser(newUser);
            if (savedUser == null) {
@@ -51,22 +51,22 @@ public class AuthController {
 
         String domainPart = user.getEmail().split("@")[1];
         String provider = domainPart.split("\\.")[0];
-        String emailContent = """
-    <html>
-        <head>
-            <meta charset="UTF-8">
-        </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <h2 style="color: #2c3e50;">Salut <b>%s</b>!</h2>
-            <p>Contul tau a fost creat cu succes.</p>
-            <p style="margin-top: 20px;">
-                Iti multumim ca ti-ai facut cont la <strong>Terra Bucovina</strong>!<br>
-                Ne bucuram sa te avem în comunitatea noastra.
-            </p>
-            <p style="margin-top: 30px;">Echipa Terra Bucovina</p>
-        </body>
-    </html>
-""".formatted(user.getUsername());
+        String emailContent =  """
+                                    <html>
+                                        <head>
+                                            <meta charset="UTF-8">
+                                        </head>
+                                        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                                            <h2 style="color: #2c3e50;">Salut <b>%s</b>!</h2>
+                                            <p>Contul tau a fost creat cu succes.</p>
+                                            <p style="margin-top: 20px;">
+                                                Iti multumim ca ti-ai facut cont la <strong>Terra Bucovina</strong>!<br>
+                                                Ne bucuram sa te avem în comunitatea noastra.
+                                            </p>
+                                            <p style="margin-top: 30px;">Echipa Terra Bucovina</p>
+                                        </body>
+                                    </html>
+                                """.formatted(user.getUsername());
 
         emailService.sendEmail(user.getEmail(), "Confirmare cont", emailContent, provider);
         return ResponseEntity.ok("User registered successfully");

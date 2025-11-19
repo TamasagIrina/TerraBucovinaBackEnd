@@ -49,9 +49,9 @@ public class SecurityConfig {
                             authorizeRequests
                                     .requestMatchers(HttpMethod.GET, "/api/products/get/**", "/api/products/reviews/**", "/api/products/images/get/**", "/images/**",
                                             "/api/products/reviews/get/all", "/api/products/reviews/get/allByProductId/**", "/userId/*", "/user/**").permitAll()
-                                    .requestMatchers("/api/auth/**", "/api/products/images/auth/**", "/user/delete/**", "/api/orders/add", "/api/orders/can-review/**").permitAll()
+                                    .requestMatchers("/api/auth/**", "/api/products/images/auth/**", "/user/delete/**", "/api/orders/add", "/api/orders/can-review/**", "/api/contact/us/add").permitAll()
 
-                                    .requestMatchers("/api/products/admin/**", "/api/orders/get/all", "/api/orders/updateStatus/**").hasRole("ADMIN")
+                                    .requestMatchers("/api/products/admin/**", "/api/orders/get/all", "/api/orders/updateStatus/**", "/api/contact/us/admin/**").hasRole("ADMIN")
 
                                     .requestMatchers("/api/user/**", "/api/products/reviews/add").hasRole("USER")
 

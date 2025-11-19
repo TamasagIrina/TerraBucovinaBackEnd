@@ -19,7 +19,6 @@ public class OrderProduct {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
-    @JsonIgnore
     private Product product;
 
     private Integer quantity;
