@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Notificare comanda noua</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #333;">
+<h2>Comanda noua,</h2>
+
+<p>A fost plasata o noua comanda de catre <strong th:text="${fullName}">Client</strong>.</p>
+
+<p>ID Comanda: <strong th:text="${orderId}">#123</strong></p>
+
+<h3>Produse comandate:</h3>
+<table style="width:100%; border-collapse: collapse;">
+    <thead>
+    <tr>
+        <th style="border:1px solid #ddd; padding:8px;">Produs</th>
+        <th style="border:1px solid #ddd; padding:8px;">Imagine</th>
+        <th style="border:1px solid #ddd; padding:8px;">Cantitate</th>
+        <th style="border:1px solid #ddd; padding:8px;">Pret</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}">
+        <td th:text="${product.name}" style="border:1px solid #ddd; padding:8px;"></td>
+        <td style="border:1px solid #ddd; padding:8px;">
+            <img th:src="${product.imageUrl}" style="max-width: 80px;" />
+        </td>
+        <td th:text="${product.quantity}" style="border:1px solid #ddd; padding:8px;"></td>
+        <td th:text="${product.price} + ' RON'" style="border:1px solid #ddd; padding:8px;"></td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>Adresa de livrare:</h3>
+<p>
+    <strong>Nume:</strong> <span th:text="${fullName}">Client</span><br/>
+    <strong>Telefon:</strong> <span th:text="${phone}">000</span><br/>
+    <strong>Email:</strong> <span th:text="${email}">email@test.com</span><br/><br/>
+
+    <strong>Tara:</strong> <span th:text="${country}">Romania</span><br/>
+    <strong>Judet:</strong> <span th:text="${county}">Suceava</span><br/>
+    <strong>Oras:</strong> <span th:text="${city}">Radauti</span><br/>
+    <strong>Cod postal:</strong> <span th:text="${postalCode}">725400</span><br/><br/>
+
+    <strong>Adresa completa:</strong><br/>
+    <span th:text="${address}">Str. Exemplu nr. 12</span><br/><br/>
+
+    <strong>Metoda de livrare:</strong> <span th:text="${deliveryMethod}"></span><br/>
+    <strong>Metoda de plata:</strong> <span th:text="${paymentMethod}"></span><br/>
+
+    <br/>
+
+    <span th:if="${isCompanyInvoice}">
+        <strong>Facturare companie:</strong> DA<br/>
+        <strong>CUI:</strong> <span th:text="${cui}"></span>
+    </span>
+</p>
+
+<p style="margin-top:20px;">Verifica sistemul de administrare pentru mai multe detalii.</p>
+</body>
+</html>

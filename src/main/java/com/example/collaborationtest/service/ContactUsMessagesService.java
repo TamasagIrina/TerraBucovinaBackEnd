@@ -33,9 +33,13 @@ public class ContactUsMessagesService {
         return contactUsMessages;
     }
 
-    public ContactUsMessages updateStatus(int id, MessageStatus status ) {
-        ContactUsMessages contactUsMessages = contactUsMessagesRepo.findById(id).get();
+    public ContactUsMessages updateStatus(int id, MessageStatus status) {
+        ContactUsMessages contactUsMessages = contactUsMessagesRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mesajul nu a fost găsit"));
+
         contactUsMessages.setStatus(status);
-        return contactUsMessages;
+
+
+        return contactUsMessagesRepo.save(contactUsMessages);
     }
 }

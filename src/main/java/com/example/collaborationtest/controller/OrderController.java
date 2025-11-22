@@ -46,6 +46,7 @@ public class OrderController {
         }
 
         emailService.sendOrderConfirmationEmail(newOrder);
+        emailService.sendNewOrderNotificationToAdmins(newOrder);
 
         return ResponseEntity.ok(newOrder);
     }

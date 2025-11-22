@@ -31,12 +31,15 @@ public class ContactUsMessagesController {
         ContactUsMessages messageAdded= contactUsMessagesService.addContactUsMessage(contactUsMessages);
         if(messageAdded!=null) {
             this.emailService.sendContactResponseEmail(messageAdded);
+            this.emailService.sendNewContactMessageToAdmins(messageAdded);
         }
         return messageAdded;
     }
 
     @PatchMapping("/admin/update/status")
-    public ContactUsMessages updateContactUsMessages(@RequestBody int id, @RequestBody MessageStatus status, @RequestBody String message) {
+    public ContactUsMessages updateContactUsMessages(   @RequestParam int id,
+                                                        @RequestParam MessageStatus status,
+                                                        @RequestParam String message) {
         ContactUsMessages updateMessage= contactUsMessagesService.updateStatus(id, status);
         if (updateMessage != null) {
 

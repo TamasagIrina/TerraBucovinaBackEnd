@@ -41,7 +41,7 @@ public class AuthController {
            newUser.setUsername(user.getUsername());
            newUser.setEmail(user.getEmail());
            newUser.setPassword(user.getPassword());
-           newUser.setRoles(   Collections.singleton(Role.ADMIN)); // default role
+           newUser.setRoles(   Collections.singleton(Role.USER));
            newUser.setEnabled(true);
            User savedUser = userService.createUser(newUser);
            if (savedUser == null) {

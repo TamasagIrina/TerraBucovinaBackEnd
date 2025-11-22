@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Mesaj nou de pe site</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #333;">
+<h2>Mesaj nou,</h2>
+
+<p>A fost trimis un mesaj nou prin formularul de contact.</p>
+
+<h3>Detalii expeditor:</h3>
+<p>
+    <strong>Nume:</strong> <span th:text="${fullName}">Client</span><br/>
+    <strong>Email:</strong> <span th:text="${email}">email@test.com</span><br/>
+</p>
+
+<h3>Mesaj:</h3>
+<blockquote style="background-color:#f9f9f9; padding:15px; border-left:5px solid #ccc;">
+    <p th:text="${messageContent}">Mesajul trimis va aparea aici.</p>
+</blockquote>
+
+<p style="margin-top:20px;">Verifica panoul de administrare pentru mai multe detalii.</p>
+</body>
+</html>

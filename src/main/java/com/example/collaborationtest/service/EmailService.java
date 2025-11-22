@@ -1,6 +1,8 @@
 package com.example.collaborationtest.service;
 
+import com.example.collaborationtest.enums.Role;
 import com.example.collaborationtest.model.*;
+import com.example.collaborationtest.repository.UserRepo;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +28,22 @@ public class EmailService {
 
     private ProductService productService;
 
-    private EmailProducts emailProducts;
 
     private ImageService imageService;
+
+    private UserRepo userRepo;
 
     @Autowired
     private TemplateEngine templateEngine;
 
     public EmailService(@Qualifier("gmailSender") JavaMailSender gmailSender,
                         @Qualifier("yahooSender") JavaMailSender yahooSender,
-                        ProductService productService, ImageService imageService) {
+                        ProductService productService, ImageService imageService, UserRepo userRepo) {
         this.gmailSender = gmailSender;
         this.yahooSender = yahooSender;
         this.productService = productService;
         this.imageService = imageService;
+        this.userRepo = userRepo;
     }
 
 
@@ -104,6 +108,60 @@ public class EmailService {
         sendEmail(order.getEmail(), "Confirmare comanda – Terra Bucovina", htmlBody, provider);
     }
 
+    public void sendNewOrderNotificationToAdmins(Order order) {
+        List<EmailProducts> productDetails = new ArrayList<>();
+
+        for (OrderProduct op : order.getProducts()) {
+            Product product = productService.getProductById(op.getProduct().getId());
+            Image image = imageService.findPrimaryByProduct_Id(op.getProduct().getId());
+
+            EmailProducts dto = new EmailProducts(
+                    product.getName(),
+                    image != null ? "http://localhost:8080" + image.getImageUrl() : "",
+                    op.getQuantity(),
+                    product.getPrice()
+            );
+
+            productDetails.add(dto);
+        }
+
+
+        List<User> adminUsers = userRepo.findAllByRoles(Role.ADMIN);
+
+
+
+        for (User admin : adminUsers) {
+            String email = admin.getEmail();
+            String domainPart = email.split("@")[1];
+            String provider = domainPart.split("\\.")[0];
+
+
+            Context context = new Context();
+            context.setVariable("fullName", order.getFullName());
+            context.setVariable("email", order.getEmail());
+            context.setVariable("phone", order.getPhone());
+
+            context.setVariable("country", order.getCountry());
+            context.setVariable("county", order.getCounty());
+            context.setVariable("city", order.getCity());
+            context.setVariable("postalCode", order.getPostalCode());
+            context.setVariable("address", order.getAddress());
+
+            context.setVariable("deliveryMethod", order.getDeliveryMethod());
+            context.setVariable("paymentMethod", order.getPaymentMethod());
+
+            context.setVariable("isCompanyInvoice", order.getIsCompanyInvoice());
+            context.setVariable("cui", order.getCui());
+
+            context.setVariable("products", productDetails);
+            context.setVariable("orderId", order.getId());
+
+            String htmlBody = templateEngine.process("adminOrderNotification", context);
+            sendEmail(email, "Nouă comandă plasată – Terra Bucovina", htmlBody, provider);
+        }
+    }
+
+
     public void sendContactResponseEmail(ContactUsMessages message) {
         String domainPart = message.getEmail().split("@")[1];
         String provider = domainPart.split("\\.")[0];
@@ -121,6 +179,32 @@ public class EmailService {
                 provider
         );
     }
+
+    public void sendNewContactMessageToAdmins(ContactUsMessages message) {
+
+        List<User> adminUsers = userRepo.findAllByRoles(Role.ADMIN);
+
+        for (User admin : adminUsers) {
+            String email = admin.getEmail();
+            String domainPart = email.split("@")[1];
+            String provider = domainPart.split("\\.")[0];
+
+            Context context = new Context();
+            context.setVariable("fullName", message.getName());
+            context.setVariable("email", message.getEmail());
+            context.setVariable("messageContent", message.getMessage());
+
+            String htmlBody = templateEngine.process("adminNewMessage", context);
+
+            sendEmail(
+                    email,
+                    "Mesaj nou primit - Terra Bucovina",
+                    htmlBody,
+                    provider
+            );
+        }
+    }
+
 
 
 
