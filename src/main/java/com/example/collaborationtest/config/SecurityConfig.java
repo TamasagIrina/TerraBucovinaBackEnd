@@ -53,7 +53,7 @@ public class SecurityConfig {
 
                                     .requestMatchers("/api/products/admin/**", "/api/orders/get/all", "/api/orders/updateStatus/**", "/api/contact/us/admin/**").hasRole("ADMIN")
 
-                                    .requestMatchers("/api/user/**", "/api/products/reviews/add").hasRole("USER")
+                                    .requestMatchers("/api/user/**", "/api/products/reviews/add", "/api/orders/get/byUserId/**").hasRole("USER")
 
                                     .anyRequest().authenticated())
                     .httpBasic(Customizer.withDefaults())

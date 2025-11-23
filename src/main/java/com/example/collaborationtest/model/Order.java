@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,6 +43,9 @@ public class Order {
 
     @Column(columnDefinition = "TEXT")
     private String address;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal totalPrice;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
