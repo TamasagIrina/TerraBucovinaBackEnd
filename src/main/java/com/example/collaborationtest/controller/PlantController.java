@@ -1,8 +1,12 @@
 package com.example.collaborationtest.controller;
 
 import com.example.collaborationtest.model.Plant;
+import com.example.collaborationtest.model.PlantDTO;
+import com.example.collaborationtest.model.Product;
+import com.example.collaborationtest.repository.ProductRepo;
 import com.example.collaborationtest.service.FileSystemStorageService;
 import com.example.collaborationtest.service.PlantService;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,10 +18,12 @@ public class PlantController {
 
     private PlantService plantService;
     private final FileSystemStorageService storage;
+    private ProductRepo productRepo;
 
-    public PlantController(PlantService plantService, FileSystemStorageService storage) {
+    public PlantController(PlantService plantService, FileSystemStorageService storage, ProductRepo productRepo) {
         this.plantService = plantService;
         this.storage = storage;
+        this.productRepo = productRepo;
     }
 
     @GetMapping("/getAll")
@@ -35,22 +41,29 @@ public class PlantController {
         return this.plantService.findPlantProductById(productId);
     }
 
-    @PostMapping("/add")
+    @PostMapping(value = "/admin/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Plant addPlant(
-            @RequestBody Plant plant,
+            @RequestPart("plant") PlantDTO dto,
             @RequestPart("file") MultipartFile file
     ) throws IOException {
-        var stored = storage.saveProductImage(plant.getId(), file);
-        plant.setId(0);
+        Product product = productRepo.findById(dto.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        Plant plant = new Plant();
+            plant.setId(0);
+            plant.setName(dto.getName());
+            plant.setShortDescription(dto.getShortDescription());
+            plant.setLongDescription(dto.getLongDescription());
+            plant.setPlantMessage(dto.getPlantMessage());
+            plant.setProduct(product);
+            plant.setId(0);
+        Plant saved = plantService.addPlant(plant);
+        var stored = storage.saveProductImage(saved.getId(), file);
         plant.setImageUrl(stored.publicUrl());
-        return this.plantService.addPlant(plant);
+
+        return plantService.updatePlant(saved);
     }
 
-    @PutMapping("/update/{id}")
-    public Plant update(@PathVariable int id, @RequestBody Plant plant) {
-        plant.setId(id);
-        return plantService.updatePlant(plant);
-    }
+
 
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable int id) {

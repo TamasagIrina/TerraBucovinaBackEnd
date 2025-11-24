@@ -48,10 +48,11 @@ public class SecurityConfig {
                     .authorizeHttpRequests(authorizeRequests ->
                             authorizeRequests
                                     .requestMatchers(HttpMethod.GET, "/api/products/get/**", "/api/products/reviews/**", "/api/products/images/get/**", "/images/**",
-                                            "/api/products/reviews/get/all", "/api/products/reviews/get/allByProductId/**", "/userId/*", "/user/**").permitAll()
-                                    .requestMatchers("/api/auth/**", "/api/products/images/auth/**", "/user/delete/**", "/api/orders/add", "/api/orders/can-review/**", "/api/contact/us/add").permitAll()
+                                            "/api/products/reviews/get/all", "/api/products/reviews/get/allByProductId/**", "/userId/*", "/user/**", "/api/products/plants/getAll").permitAll()
+                                    .requestMatchers("/api/auth/**", "/api/products/images/auth/**", "/user/delete/**", "/api/orders/add", "/api/orders/can-review/**",
+                                            "/api/contact/us/add").permitAll()
 
-                                    .requestMatchers("/api/products/admin/**", "/api/orders/get/all", "/api/orders/updateStatus/**", "/api/contact/us/admin/**").hasRole("ADMIN")
+                                    .requestMatchers("/api/products/admin/**", "/api/orders/get/all", "/api/orders/updateStatus/**", "/api/contact/us/admin/**", "/api/products/plants/admin/**").hasRole("ADMIN")
 
                                     .requestMatchers("/api/user/**", "/api/products/reviews/add", "/api/orders/get/byUserId/**").hasRole("USER")
 

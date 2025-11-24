@@ -59,7 +59,6 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
-    @JsonBackReference
     private User user;
 
 }

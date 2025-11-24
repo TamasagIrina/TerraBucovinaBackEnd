@@ -30,11 +30,11 @@ public class Plant {
     private String imageUrl;
 
     @Column(columnDefinition = "TEXT")
-    private String description;
+    private String shortDescription;
+
+    @Column(length = 1000)
+    private String longDescription;
 
     @Column(length = 300)
-    private String benefit;
-
-    @Column(length = 300)
-    private String extract;
+    private String plantMessage;
 }

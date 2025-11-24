@@ -40,7 +40,7 @@ public class User {
     private boolean enabled = true;
 
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference
+    @JsonIgnore
     private List<Order> orders;
 
     @OneToMany(mappedBy = "user")
