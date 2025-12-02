@@ -39,8 +39,14 @@ public class Product {
     @Column(name = "long_desc", length = 1000)
     private String longDesc;
 
-    @Column(length = 100)
-    private String category;
+    @Column(name = "notification", length = 200)
+    private String notification;
+
+    @Column(name = "ingredients", length = 200)
+    private String ingredients;
+
+    @Column(name = "scientific_studies", length = 2000)
+    private String scientificStudies;
 
     @Column(name = "stock_qty", nullable = false)
     private Integer stockQty = 0;
@@ -56,6 +62,10 @@ public class Product {
     @Column(name = "updated_at")
     private String updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categorie_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "products"})
+    private Categories categories;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties({"product", "hibernateLazyInitializer", "handler"})

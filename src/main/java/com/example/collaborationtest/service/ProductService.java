@@ -1,6 +1,8 @@
 package com.example.collaborationtest.service;
 
+import com.example.collaborationtest.model.Categories;
 import com.example.collaborationtest.model.Product;
+import com.example.collaborationtest.repository.CategoriesRepo;
 import com.example.collaborationtest.repository.ProductRepo;
 import org.springframework.stereotype.Service;
 
@@ -10,9 +12,10 @@ import java.util.List;
 public class ProductService {
 
     private ProductRepo productRepo;
-
-    public ProductService(ProductRepo productRepo) {
+    private CategoriesRepo categoriesRepo;
+    public ProductService(ProductRepo productRepo, CategoriesRepo categoriesRepo) {
         this.productRepo = productRepo;
+        this.categoriesRepo = categoriesRepo;
     }
 
     public List<Product> getProducts() {
@@ -28,9 +31,23 @@ public class ProductService {
     }
     public Product addProduct(Product product) {
 
-        if(getProductByName(product.getName()) != null) {
+        if (getProductByName(product.getName()) != null) {
             return null;
         }
+
+
+        Integer categoryId = product.getCategories() != null ? product.getCategories().getId() : null;
+
+        if (categoryId == null) {
+            throw new IllegalArgumentException("Category ID is required!");
+        }
+
+
+        Categories category = categoriesRepo.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found: " + categoryId));
+
+
+        product.setCategories(category);
 
         return productRepo.save(product);
     }
