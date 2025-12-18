@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Status comanda</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #333;">
+
+<h2>Salut <span th:text="${fullName}">Client</span>,</h2>
+
+<p>Statusul comenzii dumneavoastra <strong>#<span th:text="${orderId}">12345</span></strong> a fost actualizat.</p>
+
+<h3>Status actual:</h3>
+<p style="font-size: 18px; font-weight: bold; color: #2a7ae2;">
+    <span th:text="${status}">In procesare</span>
+</p>
+
+<hr style="margin:20px 0;">
+
+<h3>Detalii comanda:</h3>
+<table style="width:100%; border-collapse: collapse;">
+    <thead>
+    <tr>
+        <th style="border:1px solid #ddd; padding:8px;">Produs</th>
+        <th style="border:1px solid #ddd; padding:8px;">Imagine</th>
+        <th style="border:1px solid #ddd; padding:8px;">Cantitate</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}">
+        <td th:text="${product.name}" style="border:1px solid #ddd; padding:8px;"></td>
+        <td style="border:1px solid #ddd; padding:8px; text-align:center;">
+            <img th:src="${product.imageUrl}" style="max-width: 80px;" />
+        </td>
+        <td th:text="${product.quantity}" style="border:1px solid #ddd; padding:8px;"></td>
+    </tr>
+    </tbody>
+</table>
+
+<p style="margin-top:20px;">
+    Daca aveti intrebari legate de comanda, ne puteti contacta oricand.
+</p>
+
+<p style="margin-top:20px;">Va multumim ca ati ales <strong>Terra Bucovina</strong>!</p>
+
+</body>
+</html>

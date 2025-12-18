@@ -11,6 +11,8 @@ import com.example.collaborationtest.repository.UserRepo;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,12 +26,14 @@ public class OrderService {
 
     private final UserRepo userRepo;
 
-    public OrderService(OrderRepo orderRepo, OrderProductService orderProductService, ProductRepo productRepo, UserRepo userRepo) {
+    private final EmailService emailService;
+
+    public OrderService(OrderRepo orderRepo, OrderProductService orderProductService, ProductRepo productRepo, UserRepo userRepo, EmailService emailService) {
         this.orderRepo = orderRepo;
         this.orderProductService = orderProductService;
         this.productRepo = productRepo;
         this.userRepo = userRepo;
-
+        this.emailService = emailService;
     }
 
     public List<Order> getAllOrder() {
@@ -56,7 +60,11 @@ public class OrderService {
         order.setStatus(OrderStatus.PLASATA);
         order.setCreatedAt(null);
 
-
+        if (order.getTermsAccepted()) {
+            order.setTermsAccepted(true);
+            order.setTermsAcceptedAt(LocalDateTime.now());
+            order.setTermsVersion(LocalDate.now().toString());
+        }
 
         if (order.getUser() != null) {
             int userId = order.getUser().getId();
@@ -79,15 +87,31 @@ public class OrderService {
             op.setOrder(order);
         });
 
-        return orderRepo.save(order);
+        Order saved = orderRepo.save(order);
+
+        emailService.sendOrderConfirmationEmail(saved);
+        emailService.sendNewOrderNotificationToAdmins(saved);
+
+        return saved;
     }
 
-    public Order updateOrderStatus(int id, OrderStatus status) {
-        Order order = this.orderRepo.findById(id).get();
-        order.setStatus(status);
-        return this.orderRepo.save(order);
+    public Order updateOrderStatus(int id, OrderStatus newStatus) {
+        Order order = orderRepo.findById(id).orElseThrow();
 
+
+        if (order.getStatus() == newStatus) {
+            return order;
+        }
+
+        order.setStatus(newStatus);
+        Order saved = orderRepo.save(order);
+
+    
+        emailService.sendOrderStatusUpdateEmail(saved);
+
+        return saved;
     }
+
 
     public boolean hasUserPurchasedProduct(int userId, int productId) {
         List<Order> orders = orderRepo.findByUserId(userId);

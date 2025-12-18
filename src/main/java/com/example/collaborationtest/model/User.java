@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +34,13 @@ public class User {
 
     @Column(name = "password")
     private String password;
+
+    @Column(name = "terms_accepted")
+    private boolean termsAccepted;
+    @Column(name = "terms_accepted_at")
+    private LocalDateTime termsAcceptedAt;
+    @Column(name = "terms_version")
+    private String termsVersion;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)

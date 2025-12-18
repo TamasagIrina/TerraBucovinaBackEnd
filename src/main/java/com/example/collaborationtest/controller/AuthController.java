@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 @RestController
@@ -41,8 +43,14 @@ public class AuthController {
            newUser.setUsername(user.getUsername());
            newUser.setEmail(user.getEmail());
            newUser.setPassword(user.getPassword());
-           newUser.setRoles(   Collections.singleton(Role.USER));
+           newUser.setRoles(   Collections.singleton(Role.USER) );
            newUser.setEnabled(true);
+           if (user.isTermsAccepted()) {
+               newUser.setTermsAccepted(true);
+               newUser.setTermsAcceptedAt(LocalDateTime.now());
+               newUser.setTermsVersion(LocalDate.now().toString());
+           }
+
            User savedUser = userService.createUser(newUser);
            if (savedUser == null) {
                return ResponseEntity.badRequest().body("Username already exists");

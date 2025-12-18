@@ -64,14 +64,12 @@ public class EmailService {
         try {
             MimeMessage message = sender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(body, true);
             helper.setFrom(((JavaMailSenderImpl) sender).getUsername());
-
             sender.send(message);
-            System.out.println("Email trimis cu succes prin " + provider);
+
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -79,6 +77,7 @@ public class EmailService {
 
 
 
+    @Async
     public void sendOrderConfirmationEmail(Order order) {
         List<EmailProducts> productDetails = new ArrayList<>();
 
@@ -88,7 +87,7 @@ public class EmailService {
 
             EmailProducts dto = new EmailProducts(
                     product.getName(),
-                    image != null ? "http://localhost:8080"+image.getImageUrl() : "",
+                    image != null ? "http://localhost:8080" + image.getImageUrl() : "",
                     op.getQuantity(),
                     product.getPrice()
             );
@@ -104,10 +103,64 @@ public class EmailService {
         context.setVariable("products", productDetails);
 
 
+        context.setVariable("address", order.getAddress());
+        context.setVariable("city", order.getCity());
+        context.setVariable("county", order.getCounty());
+        context.setVariable("country", order.getCountry());
+
         String htmlBody = templateEngine.process("orderConfirmation", context);
-        sendEmail(order.getEmail(), "Confirmare comanda – Terra Bucovina", htmlBody, provider);
+
+        sendEmail(
+                order.getEmail(),
+                "Confirmare comanda - Terra Bucovina",
+                htmlBody,
+                provider
+        );
     }
 
+
+    @Async
+    public void sendOrderStatusUpdateEmail(Order order) {
+        List<EmailProducts> productDetails = new ArrayList<>();
+
+        for (OrderProduct op : order.getProducts()) {
+            Product product = productService.getProductById(op.getProduct().getId());
+            Image image = imageService.findPrimaryByProduct_Id(op.getProduct().getId());
+
+            EmailProducts dto = new EmailProducts(
+                    product.getName(),
+                    image != null ? "http://localhost:8080" + image.getImageUrl() : "",
+                    op.getQuantity(),
+                    product.getPrice()
+            );
+
+            productDetails.add(dto);
+        }
+
+
+        String domainPart = order.getEmail().split("@")[1];
+        String provider = domainPart.split("\\.")[0];
+
+        Context context = new Context();
+        context.setVariable("fullName", order.getFullName());
+        context.setVariable("orderId", order.getId());
+        context.setVariable("status", order.getStatus());
+        context.setVariable("products", productDetails);
+
+        System.out.println("PRODUSE"+ productDetails.size());
+
+        String htmlBody = templateEngine.process("orderStatusUpdate", context);
+
+        sendEmail(
+                order.getEmail(),
+                "Status comanda – Terra Bucovina",
+                htmlBody,
+                provider
+        );
+    }
+
+
+    @Async
     public void sendNewOrderNotificationToAdmins(Order order) {
         List<EmailProducts> productDetails = new ArrayList<>();
 
@@ -161,7 +214,7 @@ public class EmailService {
         }
     }
 
-
+    @Async
     public void sendContactResponseEmail(ContactUsMessages message) {
         String domainPart = message.getEmail().split("@")[1];
         String provider = domainPart.split("\\.")[0];
@@ -180,6 +233,7 @@ public class EmailService {
         );
     }
 
+    @Async
     public void sendNewContactMessageToAdmins(ContactUsMessages message) {
 
         List<User> adminUsers = userRepo.findAllByRoles(Role.ADMIN);

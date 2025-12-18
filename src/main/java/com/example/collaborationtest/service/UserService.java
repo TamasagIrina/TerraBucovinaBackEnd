@@ -74,7 +74,7 @@ public class UserService {
 
         //getting the authentication for the user passed in the login form
         Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+                .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         if(authentication.isAuthenticated()) {

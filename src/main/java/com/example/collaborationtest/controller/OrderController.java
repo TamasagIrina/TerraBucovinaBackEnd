@@ -18,11 +18,11 @@ import java.util.Map;
 public class OrderController {
 
     private OrderService orderService;
-    private final EmailService emailService;
 
-    public OrderController(OrderService orderService, EmailService emailService) {
+
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
-        this.emailService = emailService;
+
     }
 
     @GetMapping("/get/all")
@@ -45,15 +45,18 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        emailService.sendOrderConfirmationEmail(newOrder);
-        emailService.sendNewOrderNotificationToAdmins(newOrder);
 
         return ResponseEntity.ok(newOrder);
     }
 
     @PutMapping("/updateStatus/{id}/{orderStatus}")
     public Order updateStatus(@PathVariable int id, @PathVariable OrderStatus orderStatus){
-            return orderService.updateOrderStatus(id,orderStatus);
+        Order order= orderService.updateOrderStatus(id,orderStatus);
+        if(order==null){
+            return null;
+        }
+
+        return order;
     }
 
     @GetMapping("/can-review/{userId}/{productId}")

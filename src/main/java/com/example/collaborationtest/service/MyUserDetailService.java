@@ -30,12 +30,12 @@ public class MyUserDetailService implements UserDetailsService {
     //IF SO WE RETURN AN OBJECT (USERPRINCIPAL) WITH ALL (PASS, USERNAME, ROLES ETC)
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepo.findByEmail(email);
 
         if(user == null) {
             System.out.println("User not found");
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException(email);
         }
 
         List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
@@ -45,6 +45,6 @@ public class MyUserDetailService implements UserDetailsService {
 
 
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(), user.getPassword(), user.isEnabled(), true, true, true, authorities);
+                user.getEmail(), user.getPassword(), user.isEnabled(), true, true, true, authorities);
     }
 }

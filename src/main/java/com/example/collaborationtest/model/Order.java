@@ -26,20 +26,33 @@ public class Order {
     private int id;
 
     private String fullName;
+
     private String email;
+
     private String phone;
 
     private Boolean isCompanyInvoice;
+
     private String cui;
 
     private String country;
+
     private String county;
+
     private String city;
+
     private String postalCode;
 
     private String paymentMethod;
 
     private String deliveryMethod;
+
+    private Boolean termsAccepted;
+
+    private LocalDateTime termsAcceptedAt;
+
+    private String termsVersion;
+
 
     @Column(columnDefinition = "TEXT")
     private String address;

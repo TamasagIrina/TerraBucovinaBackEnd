@@ -43,9 +43,9 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @GetMapping("/userId/{name}")
-    public int getUserByName(@PathVariable String name) {
-        return userService.getIdByUserName(name);
+    @GetMapping("/userId/{email}")
+    public int getUserByName(@PathVariable String email) {
+        return userService.getIdByEmail(email);
     }
 
     @GetMapping("/getRole/{name}")

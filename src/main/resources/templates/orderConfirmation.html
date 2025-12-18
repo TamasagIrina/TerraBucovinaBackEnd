@@ -4,15 +4,33 @@
     <meta charset="UTF-8">
     <title>Confirmare comanda</title>
 </head>
-<body style="font-family: Arial, sans-serif; color: #333;">
+
+<body style="font-family: Arial, sans-serif; color: #333; line-height: 1.5;">
+
 <h2>Salut <span th:text="${fullName}">Client</span>,</h2>
+
 <p>Comanda dumneavoastra a fost plasata cu succes!</p>
 
-<h3>Produsele comandate:</h3>
+<!-- ADRESA DE LIVRARE -->
+<h3 style="margin-top: 24px;">Adresa de livrare</h3>
+<p style="margin: 0;">
+    <strong>Adresa:</strong>
+    <span th:text="${address}">Strada Exemplu nr. 10</span><br>
+    <strong>Oras:</strong>
+    <span th:text="${city}">Radauti</span><br>
+    <strong>Judet:</strong>
+    <span th:text="${county}">Suceava</span><br>
+    <strong>Tara:</strong>
+    <span th:text="${country}">Romania</span>
+</p>
+
+<!-- PRODUSE -->
+<h3 style="margin-top: 24px;">Produsele comandate:</h3>
+
 <table style="width:100%; border-collapse: collapse;">
     <thead>
     <tr>
-        <th style="border:1px solid #ddd; padding:8px;">Produs</th>
+        <th style="border:1px solid #ddd; padding:8px; text-align:left;">Produs</th>
         <th style="border:1px solid #ddd; padding:8px;">Imagine</th>
         <th style="border:1px solid #ddd; padding:8px;">Cantitate</th>
         <th style="border:1px solid #ddd; padding:8px;">Pret</th>
@@ -21,15 +39,23 @@
     <tbody>
     <tr th:each="product : ${products}">
         <td th:text="${product.name}" style="border:1px solid #ddd; padding:8px;"></td>
-        <td style="border:1px solid #ddd; padding:8px;">
-            <img th:src="${product.imageUrl}" style="max-width: 80px;" />
+        <td style="border:1px solid #ddd; padding:8px; text-align:center;">
+            <img th:src="${product.imageUrl}" alt="Produs"
+                 style="max-width:80px; height:auto;" />
         </td>
-        <td th:text="${product.quantity}" style="border:1px solid #ddd; padding:8px;"></td>
-        <td th:text="${product.price} + ' RON'" style="border:1px solid #ddd; padding:8px;"></td>
+        <td th:text="${product.quantity}" style="border:1px solid #ddd; padding:8px; text-align:center;"></td>
+        <td th:text="${product.price} + ' RON'" style="border:1px solid #ddd; padding:8px; text-align:right;"></td>
     </tr>
     </tbody>
 </table>
 
-<p style="margin-top:20px;">Va multumim ca ati ales Terra Bucovina!</p>
+<p style="margin-top: 24px;">
+    Daca ai intrebari legate de comanda, ne poti contacta oricand.
+</p>
+
+<p style="margin-top: 16px;">
+    <strong>Iti multumim ca ai ales Terra Bucovina!</strong>
+</p>
+
 </body>
 </html>

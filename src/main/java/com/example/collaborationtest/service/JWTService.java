@@ -31,6 +31,7 @@ public class JWTService {
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
+        System.out.println("USER DETAILS: " + userDetails.getUsername());
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roles);
