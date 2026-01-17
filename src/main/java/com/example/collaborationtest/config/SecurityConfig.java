@@ -58,8 +58,8 @@ public class SecurityConfig {
                                     .requestMatchers("/api/user/**", "/api/products/reviews/add", "/api/orders/get/byUserId/**").hasRole("USER")
 
                                     .anyRequest().authenticated())
-                    .httpBasic(Customizer.withDefaults())
-                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    // .httpBasic(Customizer.withDefaults())
+                    // .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                     .build();
 
@@ -89,7 +89,8 @@ public class SecurityConfig {
         CorsConfiguration c = new CorsConfiguration();
         c.setAllowedOrigins(List.of("http://localhost:4200"));
         c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
-        c.setAllowedHeaders(List.of("*")); // sau listă explicită: content-type, authorization
+        c.setAllowedHeaders(List.of("*")); 
+        c.setExposedHeaders(List.of("Authorization"));
        // c.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource s = new UrlBasedCorsConfigurationSource();
         s.registerCorsConfiguration("/**", c);
