@@ -90,7 +90,7 @@ public class SecurityConfig {
         c.setAllowedOrigins(List.of("http://localhost:4200"));
         c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
         c.setAllowedHeaders(List.of("*")); // sau listă explicită: content-type, authorization
-//        c.setAllowCredentials(true);
+        c.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource s = new UrlBasedCorsConfigurationSource();
         s.registerCorsConfiguration("/**", c);
         return s;
