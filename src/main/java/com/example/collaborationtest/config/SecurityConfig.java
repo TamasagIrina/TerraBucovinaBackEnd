@@ -47,7 +47,8 @@ public class SecurityConfig {
                     .cors(Customizer.withDefaults())
                     .authorizeHttpRequests(authorizeRequests ->
                             authorizeRequests
-                                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                    .requestMatchers("/actuator/**", "/error").permitAll()
                                     .requestMatchers(HttpMethod.GET, "/api/products/get/**", "/api/products/reviews/**", "/api/products/images/get/**", "/images/**",
                                             "/api/products/reviews/get/all", "/api/products/reviews/get/allByProductId/**", "/userId/*", "/user/**", "/api/products/plants/getAll").permitAll()
                                     .requestMatchers("/api/auth/**", "/api/products/images/auth/**", "/user/delete/**", "/api/orders/add", "/api/orders/can-review/**",
@@ -58,10 +59,11 @@ public class SecurityConfig {
                                     .requestMatchers("/api/user/**", "/api/products/reviews/add", "/api/orders/get/byUserId/**").hasRole("USER")
 
                                     .anyRequest().authenticated())
-                    .httpBasic(AbstractHttpConfigurer::disable) 
-                    .formLogin(AbstractHttpConfigurer::disable)
-                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                   .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                    // .httpBasic(AbstractHttpConfigurer::disable) 
+                    // .formLogin(AbstractHttpConfigurer::disable)
+                    // .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                
+                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                     .build();
 
     }
@@ -100,7 +102,7 @@ public class SecurityConfig {
         c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
         c.setAllowedHeaders(List.of("*")); 
         // c.setExposedHeaders(List.of("Authorization"));
-       // c.setAllowCredentials(true);
+        c.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource s = new UrlBasedCorsConfigurationSource();
         s.registerCorsConfiguration("/**", c);
         return s;
