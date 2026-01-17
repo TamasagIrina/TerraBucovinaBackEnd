@@ -58,7 +58,8 @@ public class SecurityConfig {
                                     .requestMatchers("/api/user/**", "/api/products/reviews/add", "/api/orders/get/byUserId/**").hasRole("USER")
 
                                     .anyRequest().authenticated())
-                    .httpBasic(Customizer.withDefaults())
+                    .httpBasic(AbstractHttpConfigurer::disable) 
+                    .formLogin(AbstractHttpConfigurer::disable)
                     .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                     .build();
