@@ -39,30 +39,38 @@ public class SecurityConfig {
     public SecurityConfig(JWTFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
+    // @Bean
+    // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+    //         return http
+    //                 .csrf(AbstractHttpConfigurer::disable)
+    //                 .cors(Customizer.withDefaults())
+    //                 .authorizeHttpRequests(authorizeRequests ->
+    //                         authorizeRequests
+    //                                  .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+    //                                 .requestMatchers(HttpMethod.GET, "/api/products/get/**", "/api/products/reviews/**", "/api/products/images/get/**", "/images/**",
+    //                                         "/api/products/reviews/get/all", "/api/products/reviews/get/allByProductId/**", "/userId/*", "/user/**", "/api/products/plants/getAll").permitAll()
+    //                                 .requestMatchers("/api/auth/**", "/api/products/images/auth/**", "/user/delete/**", "/api/orders/add", "/api/orders/can-review/**",
+    //                                         "/api/contact/us/add", "/api/categories/get/all").permitAll()
+
+    //                                 .requestMatchers("/api/products/admin/**", "/api/orders/get/all", "/api/orders/updateStatus/**", "/api/contact/us/admin/**", "/api/products/plants/admin/**", "/api/categories/add").hasRole("ADMIN")
+
+    //                                 .requestMatchers("/api/user/**", "/api/products/reviews/add", "/api/orders/get/byUserId/**").hasRole("USER")
+
+    //                                 .anyRequest().authenticated())
+    //                 // .httpBasic(Customizer.withDefaults())
+    //                 // .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    //                // .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+    //                 .build();
+
+    // }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-            return http
-                    .csrf(AbstractHttpConfigurer::disable)
-                    .cors(Customizer.withDefaults())
-                    .authorizeHttpRequests(authorizeRequests ->
-                            authorizeRequests
-                                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                    .requestMatchers(HttpMethod.GET, "/api/products/get/**", "/api/products/reviews/**", "/api/products/images/get/**", "/images/**",
-                                            "/api/products/reviews/get/all", "/api/products/reviews/get/allByProductId/**", "/userId/*", "/user/**", "/api/products/plants/getAll").permitAll()
-                                    .requestMatchers("/api/auth/**", "/api/products/images/auth/**", "/user/delete/**", "/api/orders/add", "/api/orders/can-review/**",
-                                            "/api/contact/us/add", "/api/categories/get/all").permitAll()
-
-                                    .requestMatchers("/api/products/admin/**", "/api/orders/get/all", "/api/orders/updateStatus/**", "/api/contact/us/admin/**", "/api/products/plants/admin/**", "/api/categories/add").hasRole("ADMIN")
-
-                                    .requestMatchers("/api/user/**", "/api/products/reviews/add", "/api/orders/get/byUserId/**").hasRole("USER")
-
-                                    .anyRequest().authenticated())
-                    // .httpBasic(Customizer.withDefaults())
-                    // .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                   // .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                    .build();
-
+    return http
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(Customizer.withDefaults())
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+            .build();
     }
 
     @Bean
