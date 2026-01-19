@@ -95,18 +95,22 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    @Bean
-   public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration c = new CorsConfiguration();
-        c.setAllowedOrigins(List.of("*"));
-        c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
-        c.setAllowedHeaders(List.of("*")); 
-        c.setExposedHeaders(List.of("Authorization"));
-        c.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource s = new UrlBasedCorsConfigurationSource();
-        s.registerCorsConfiguration("/**", c);
-        return s;
-    }
+@Bean
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration c = new CorsConfiguration();
+    c.setAllowedOrigins(List.of(
+        "https://terra-bucovina-frontend-2nus-irinas-projects-f1aedf43.vercel.app/"
+    ));
+    c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
+    c.setAllowedHeaders(List.of("*"));
+    c.setExposedHeaders(List.of("Authorization"));
+    c.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource s = new UrlBasedCorsConfigurationSource();
+    s.registerCorsConfiguration("/**", c);
+    return s;
+}
+
 
 
 }
