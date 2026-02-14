@@ -37,7 +37,7 @@ public class EmailService {
 
     private UserRepo userRepo;
 
-    @Value("${RESEND_FROM:onboarding@resend.dev}")
+    @Value("${resend.from}")
     private String from;
 
     @Autowired
@@ -57,7 +57,7 @@ public class EmailService {
 
  
     @Async
-    public void sendEmail(String to, String subject, String body, String provider, @Value("${RESEND_API_KEY}") String apiKey) {
+    public void sendEmail(String to, String subject, String body, String provider, @Value("${resend.api-key}") String apiKey) {
 
         try {
 
