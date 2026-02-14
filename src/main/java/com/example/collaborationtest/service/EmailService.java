@@ -3,6 +3,9 @@ package com.example.collaborationtest.service;
 import com.example.collaborationtest.enums.Role;
 import com.example.collaborationtest.model.*;
 import com.example.collaborationtest.repository.UserRepo;
+import com.resend.services.batch.model.CreateBatchEmailsResponse;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.context.Context;
 import java.util.ArrayList;
 import java.util.List;
+import com.resend.*;
 
 @Service
 public class EmailService {
@@ -53,29 +57,16 @@ public class EmailService {
     public void sendEmail(String to, String subject, String body, String provider) {
 
         try {
-            JavaMailSender sender;
 
+            Resend resend = new Resend("re_jG37XWZw_KQEKgNnnzbbvL8BbCeK7kyMh");
 
-            if (provider.toLowerCase().equals("gmail")) {
-                sender = gmailSender;
-            } else if (provider.toLowerCase().equals("yahoo")) {
-                sender = gmailSender;
-            } else {
-                throw new IllegalArgumentException("Provider invalid: " + provider);
-            }
-
-            try {
-                MimeMessage message = sender.createMimeMessage();
-                MimeMessageHelper helper = new MimeMessageHelper(message, true);
-                helper.setTo(to);
-                helper.setSubject(subject);
-                helper.setText(body, true);
-                helper.setFrom(((JavaMailSenderImpl) sender).getUsername());
-                sender.send(message);
-
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from("terrabucovina@resend.dev")
+                    .to(to)
+                    .subject(subject)
+                    .html(body)
+                    .build();
+            CreateEmailResponse data = resend.emails().send(params);
         } catch (Exception e) {
             System.err.println("CRITICAL ERROR IN ASYNC EMAIL: " + e.getMessage());
             e.printStackTrace();
