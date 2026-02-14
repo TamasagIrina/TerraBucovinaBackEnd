@@ -37,6 +37,9 @@ public class EmailService {
 
     private UserRepo userRepo;
 
+    @Value("${RESEND_FROM:onboarding@resend.dev}")
+    private String from;
+
     @Autowired
     private TemplateEngine templateEngine;
 
@@ -54,14 +57,14 @@ public class EmailService {
 
  
     @Async
-    public void sendEmail(String to, String subject, String body, String provider) {
+    public void sendEmail(String to, String subject, String body, String provider, @Value("${RESEND_API_KEY}") String apiKey) {
 
         try {
 
-            Resend resend = new Resend("re_jG37XWZw_KQEKgNnnzbbvL8BbCeK7kyMh");
+            Resend resend = new Resend(apiKey);
 
             CreateEmailOptions params = CreateEmailOptions.builder()
-                    .from("terrabucovina@resend.dev")
+                    .from(from)
                     .to(to)
                     .subject(subject)
                     .html(body)
