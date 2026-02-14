@@ -50,29 +50,36 @@ public class EmailService {
 
     @Async
     public void sendEmail(String to, String subject, String body, String provider) {
-        JavaMailSender sender;
-
-
-        if (provider.toLowerCase().equals("gmail")) {
-            sender = gmailSender;
-        } else if (provider.toLowerCase().equals("yahoo")) {
-            sender = gmailSender;
-        } else {
-            throw new IllegalArgumentException("Provider invalid: " + provider);
-        }
 
         try {
-            MimeMessage message = sender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(body, true);
-            helper.setFrom(((JavaMailSenderImpl) sender).getUsername());
-            sender.send(message);
+            JavaMailSender sender;
 
-        } catch (MessagingException e) {
+
+            if (provider.toLowerCase().equals("gmail")) {
+                sender = gmailSender;
+            } else if (provider.toLowerCase().equals("yahoo")) {
+                sender = gmailSender;
+            } else {
+                throw new IllegalArgumentException("Provider invalid: " + provider);
+            }
+
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true);
+                helper.setTo(to);
+                helper.setSubject(subject);
+                helper.setText(body, true);
+                helper.setFrom(((JavaMailSenderImpl) sender).getUsername());
+                sender.send(message);
+
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            System.err.println("CRITICAL ERROR IN ASYNC EMAIL: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 
 
