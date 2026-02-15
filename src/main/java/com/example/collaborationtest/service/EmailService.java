@@ -36,6 +36,9 @@ public class EmailService {
 
     private UserRepo userRepo;
 
+    // @Value("${resend.from}")
+    // private String from;
+
     @Autowired
     private TemplateEngine templateEngine;
     @Autowired
@@ -58,18 +61,17 @@ public class EmailService {
     public void sendEmail(String to, String subject, String body, String provider) {
 
         try {
+            System.out.println("Am intrat");
+            Resend resend = new Resend("re_jG37XWZw_KQEKgNnnzbbvL8BbCeK7kyMh");
 
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(senderEmail);
-            helper.setTo(to);
-            helper.setSubject(subject);
-
-            helper.setText(body, true);
-
-            mailSender.send(message);
-            System.out.println("Email sent successfully to " + to);
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from("terrabucovina@resend.dev")
+                    .to(to)
+                    .subject(subject)
+                    .html(body)
+                    .build();
+            CreateEmailResponse data = resend.emails().send(params);
+            System.out.println("Am iesit");
         } catch (Exception e) {
             System.err.println("CRITICAL ERROR IN ASYNC EMAIL: " + e.getMessage());
             e.printStackTrace();
