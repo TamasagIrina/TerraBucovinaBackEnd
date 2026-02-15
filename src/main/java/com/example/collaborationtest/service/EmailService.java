@@ -60,7 +60,7 @@ public class EmailService {
     public void sendEmail(String to, String subject, String body, String provider) {
 
         try {
-
+            System.out.println("Am intrat");
             Resend resend = new Resend("re_jG37XWZw_KQEKgNnnzbbvL8BbCeK7kyMh");
 
             CreateEmailOptions params = CreateEmailOptions.builder()
@@ -70,6 +70,7 @@ public class EmailService {
                     .html(body)
                     .build();
             CreateEmailResponse data = resend.emails().send(params);
+            System.out.println("Am iesit");
         } catch (Exception e) {
             System.err.println("CRITICAL ERROR IN ASYNC EMAIL: " + e.getMessage());
             e.printStackTrace();
