@@ -10,7 +10,9 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -27,9 +29,6 @@ import com.resend.*;
 @Service
 public class EmailService {
 
-    private final JavaMailSender gmailSender;
-    private final JavaMailSender yahooSender;
-
     private ProductService productService;
 
 
@@ -39,12 +38,14 @@ public class EmailService {
 
     @Autowired
     private TemplateEngine templateEngine;
+    @Autowired
+    private JavaMailSender mailSender;
 
-    public EmailService(@Qualifier("gmailSender") JavaMailSender gmailSender,
-                        @Qualifier("yahooSender") JavaMailSender yahooSender,
+    @Value("${brevo.sender.email:teodor.binisor@gmail.com}")
+    private String senderEmail;
+
+    public EmailService(
                         ProductService productService, ImageService imageService, UserRepo userRepo) {
-        this.gmailSender = gmailSender;
-        this.yahooSender = yahooSender;
         this.productService = productService;
         this.imageService = imageService;
         this.userRepo = userRepo;
@@ -58,15 +59,17 @@ public class EmailService {
 
         try {
 
-            Resend resend = new Resend("re_jG37XWZw_KQEKgNnnzbbvL8BbCeK7kyMh");
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            CreateEmailOptions params = CreateEmailOptions.builder()
-                    .from("terrabucovina@resend.dev")
-                    .to(to)
-                    .subject(subject)
-                    .html(body)
-                    .build();
-            CreateEmailResponse data = resend.emails().send(params);
+            helper.setFrom(senderEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+
+            helper.setText(body, true);
+
+            mailSender.send(message);
+            System.out.println("Email sent successfully to " + to);
         } catch (Exception e) {
             System.err.println("CRITICAL ERROR IN ASYNC EMAIL: " + e.getMessage());
             e.printStackTrace();
