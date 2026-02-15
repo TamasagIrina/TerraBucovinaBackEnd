@@ -99,7 +99,8 @@ public class SecurityConfig {
 public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration c = new CorsConfiguration();
     c.setAllowedOrigins(List.of(
-        "https://terra-bucovina-frontend-2nus-irinas-projects-f1aedf43.vercel.app"
+        "https://terra-bucovina-frontend-2nus-irinas-projects-f1aedf43.vercel.app", 
+        "https://terra-bucovina.com"
     ));
     c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
     c.setAllowedHeaders(List.of("*"));
