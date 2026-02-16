@@ -126,7 +126,7 @@ public class EmailService {
 
             EmailProducts dto = new EmailProducts(
                     product.getName(),
-                    image != null ? "http://localhost:8080" + image.getImageUrl() : "",
+                    image != null ? "https://terrabucovinabackend-production.up.railway.app" + image.getImageUrl() : "",
                     op.getQuantity(),
                     product.getPrice()
             );
@@ -168,7 +168,7 @@ public class EmailService {
 
             EmailProducts dto = new EmailProducts(
                     product.getName(),
-                    image != null ? "http://localhost:8080" + image.getImageUrl() : "",
+                    image != null ? "https://terrabucovinabackend-production.up.railway.app" + image.getImageUrl() : "",
                     op.getQuantity(),
                     product.getPrice()
             );
@@ -209,7 +209,7 @@ public class EmailService {
 
             EmailProducts dto = new EmailProducts(
                     product.getName(),
-                    image != null ? "http://localhost:8080" + image.getImageUrl() : "",
+                    image != null ? "https://terrabucovinabackend-production.up.railway.app" + image.getImageUrl() : "",
                     op.getQuantity(),
                     product.getPrice()
             );
