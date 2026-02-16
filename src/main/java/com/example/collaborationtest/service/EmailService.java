@@ -141,7 +141,7 @@ public class EmailService {
         context.setVariable("fullName", order.getFullName());
         context.setVariable("products", productDetails);
 
-
+        context.setVariable("totalPrice", order.getTotalPrice());
         context.setVariable("address", order.getAddress());
         context.setVariable("city", order.getCity());
         context.setVariable("county", order.getCounty());
@@ -185,7 +185,7 @@ public class EmailService {
         context.setVariable("orderId", order.getId());
         context.setVariable("status", order.getStatus());
         context.setVariable("products", productDetails);
-
+        context.setVariable("totalPrice", order.getTotalPrice());
         System.out.println("PRODUSE"+ productDetails.size());
 
         String htmlBody = templateEngine.process("orderStatusUpdate", context);
@@ -238,7 +238,7 @@ public class EmailService {
             context.setVariable("city", order.getCity());
             context.setVariable("postalCode", order.getPostalCode());
             context.setVariable("address", order.getAddress());
-
+            context.setVariable("totalPrice", order.getTotalPrice());
             context.setVariable("deliveryMethod", order.getDeliveryMethod());
             context.setVariable("paymentMethod", order.getPaymentMethod());
 
