@@ -36,13 +36,13 @@ public class Product {
     @Column(name = "short_desc", length = 500)
     private String shortDesc;
 
-    @Column(name = "long_desc", length = 1000)
+    @Column(name = "long_desc", length = 2000)
     private String longDesc;
 
     @Column(name = "notification", length = 200)
     private String notification;
 
-    @Column(name = "ingredients", length = 200)
+    @Column(name = "ingredients", length = 500)
     private String ingredients;
 
     @Column(name = "scientific_studies", length = 2000)
