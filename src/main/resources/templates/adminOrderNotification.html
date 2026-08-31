@@ -2,62 +2,153 @@
 <html lang="ro" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notificare comanda noua</title>
 </head>
-<body style="font-family: Arial, sans-serif; color: #333;">
-<h2>Comanda noua,</h2>
 
-<p>A fost plasata o noua comanda de catre <strong th:text="${fullName}">Client</strong>.</p>
+<body style="margin:0; padding:0; background-color:#f2f4f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
 
-<p>ID Comanda: <strong th:text="${orderId}">#123</strong></p>
-
-<h3>Produse comandate:</h3>
-<table style="width:100%; border-collapse: collapse;">
-    <thead>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f2f4f8; padding:32px 0;">
     <tr>
-        <th style="border:1px solid #ddd; padding:8px;">Produs</th>
-        <th style="border:1px solid #ddd; padding:8px;">Imagine</th>
-        <th style="border:1px solid #ddd; padding:8px;">Cantitate</th>
-        <th style="border:1px solid #ddd; padding:8px;">Pret</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="product : ${products}">
-        <td th:text="${product.name}" style="border:1px solid #ddd; padding:8px;"></td>
-        <td style="border:1px solid #ddd; padding:8px;">
-            <img th:src="${product.imageUrl}" style="max-width: 80px;" />
+        <td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0"
+                   style="max-width:600px; width:100%; background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+
+                <!-- Header -->
+                <tr>
+                    <td style="background-color:#16a34a; padding:28px 32px;">
+                        <p style="margin:0; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:#d1fae5; font-weight:700;">
+                            Comanda noua
+                        </p>
+                        <h1 style="margin:6px 0 0; font-size:22px; color:#ffffff; font-weight:700;">
+                            Comanda #<span th:text="${orderId}">123</span>
+                        </h1>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="padding:32px;">
+                        <p style="margin:0 0 24px; font-size:15px; color:#374151; line-height:1.6;">
+                            A fost plasata o noua comanda de catre <strong style="color:#111827;" th:text="${fullName}">Client</strong>.
+                        </p>
+
+                        <!-- PRODUSE -->
+                        <p style="margin:0 0 10px; font-size:13px; color:#6b7280; text-transform:uppercase; letter-spacing:0.04em; font-weight:700;">
+                            Produse comandate
+                        </p>
+
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-bottom:28px;">
+                            <thead>
+                            <tr>
+                                <th style="padding:10px 8px; text-align:left; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:0.04em; border-bottom:2px solid #eef0f4;">Produs</th>
+                                <th style="padding:10px 8px; text-align:center; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:0.04em; border-bottom:2px solid #eef0f4;">Imagine</th>
+                                <th style="padding:10px 8px; text-align:center; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:0.04em; border-bottom:2px solid #eef0f4;">Cant.</th>
+                                <th style="padding:10px 8px; text-align:right; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:0.04em; border-bottom:2px solid #eef0f4;">Pret</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="product : ${products}">
+                                <td style="padding:12px 8px; font-size:14px; color:#111827; font-weight:600; border-bottom:1px solid #eef0f4;" th:text="${product.name}"></td>
+                                <td style="padding:12px 8px; text-align:center; border-bottom:1px solid #eef0f4;">
+                                    <img th:src="${product.imageUrl}" alt="Produs"
+                                         style="max-width:64px; height:auto; border-radius:6px; display:block; margin:0 auto;" />
+                                </td>
+                                <td style="padding:12px 8px; text-align:center; font-size:14px; color:#374151; border-bottom:1px solid #eef0f4;" th:text="${product.quantity}"></td>
+                                <td style="padding:12px 8px; text-align:right; font-size:14px; color:#111827; font-weight:600; border-bottom:1px solid #eef0f4;"
+                                    th:text="${#numbers.formatDecimal(product.price, 1, 2)} + ' RON'"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- ADRESA DE LIVRARE -->
+                        <p style="margin:0 0 10px; font-size:13px; color:#6b7280; text-transform:uppercase; letter-spacing:0.04em; font-weight:700;">
+                            Adresa de livrare
+                        </p>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-bottom:28px;">
+                            <tr>
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; width:140px;">Nume</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; font-weight:600;" th:text="${fullName}">Client</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">Telefon</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;" th:text="${phone}">000</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">Email</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;" th:text="${email}">email@test.com</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">Tara</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;" th:text="${country}">Romania</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">Judet</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;" th:text="${county}">Suceava</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">Oras</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;" th:text="${city}">Radauti</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">Cod postal</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;" th:text="${postalCode}">725400</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">Adresa completa</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;" th:text="${address}">Str. Exemplu nr. 12</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">Metoda livrare</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;" th:text="${deliveryMethod}"></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">Metoda plata</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;" th:text="${paymentMethod}"></td>
+                            </tr>
+                            <tr th:if="${isCompanyInvoice}">
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">Facturare companie</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;">DA</td>
+                            </tr>
+                            <tr th:if="${isCompanyInvoice}">
+                                <td style="padding:8px 0; font-size:13px; color:#6b7280; border-top:1px solid #eef0f4;">CUI</td>
+                                <td style="padding:8px 0; font-size:15px; color:#111827; border-top:1px solid #eef0f4;" th:text="${cui}"></td>
+                            </tr>
+                        </table>
+
+                        <!-- SUMAR PLATA -->
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-top:8px;">
+                            <tr>
+                                <td style="padding:14px 16px; background-color:#ecfdf5; border-radius:8px;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="font-size:14px; color:#166534; font-weight:700;">Total transport + TVA</td>
+                                            <td style="font-size:18px; color:#166534; font-weight:700; text-align:right;"
+                                                th:text="${#numbers.formatDecimal(totalPrice, 1, 2)} + ' RON'">0.00 RON</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <p style="margin:28px 0 0; font-size:14px; color:#6b7280; line-height:1.6;">
+                            Verifica sistemul de administrare pentru mai multe detalii.
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="background-color:#f9fafb; padding:20px 32px; border-top:1px solid #eef0f4;">
+                        <p style="margin:0; font-size:12px; color:#9ca3af;">
+                            Terra Bucovina — notificare automata generata la plasarea unei comenzi.
+                        </p>
+                    </td>
+                </tr>
+            </table>
         </td>
-        <td th:text="${product.quantity}" style="border:1px solid #ddd; padding:8px;"></td>
-        <td th:text="${product.price} + ' RON'" style="border:1px solid #ddd; padding:8px;"></td>
     </tr>
-    </tbody>
 </table>
 
-<h3>Adresa de livrare:</h3>
-<p>
-    <strong>Nume:</strong> <span th:text="${fullName}">Client</span><br/>
-    <strong>Telefon:</strong> <span th:text="${phone}">000</span><br/>
-    <strong>Email:</strong> <span th:text="${email}">email@test.com</span><br/><br/>
-
-    <strong>Tara:</strong> <span th:text="${country}">Romania</span><br/>
-    <strong>Judet:</strong> <span th:text="${county}">Suceava</span><br/>
-    <strong>Oras:</strong> <span th:text="${city}">Radauti</span><br/>
-    <strong>Cod postal:</strong> <span th:text="${postalCode}">725400</span><br/><br/>
-
-    <strong>Adresa completa:</strong><br/>
-    <span th:text="${address}">Str. Exemplu nr. 12</span><br/><br/>
-
-    <strong>Metoda de livrare:</strong> <span th:text="${deliveryMethod}"></span><br/>
-    <strong>Metoda de plata:</strong> <span th:text="${paymentMethod}"></span><br/>
-
-    <br/>
-
-    <span th:if="${isCompanyInvoice}">
-        <strong>Facturare companie:</strong> DA<br/>
-        <strong>CUI:</strong> <span th:text="${cui}"></span>
-    </span>
-</p>
-
-<p style="margin-top:20px;">Verifica sistemul de administrare pentru mai multe detalii.</p>
 </body>
 </html>

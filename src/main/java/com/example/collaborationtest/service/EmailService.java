@@ -1,110 +1,111 @@
 package com.example.collaborationtest.service;
 
+import com.example.collaborationtest.dto.dashboard.MonthlySummaryResponseDTO;
+import com.example.collaborationtest.dto.product.ProductResponseDTO;
 import com.example.collaborationtest.enums.Role;
 import com.example.collaborationtest.model.*;
 import com.example.collaborationtest.repository.UserRepo;
-import com.resend.services.batch.model.CreateBatchEmailsResponse;
-import com.resend.services.emails.model.CreateEmailOptions;
-import com.resend.services.emails.model.CreateEmailResponse;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.spring6.SpringTemplateEngine;
-
 import org.thymeleaf.context.Context;
+
 import java.util.ArrayList;
 import java.util.List;
-import com.resend.*;
 
+/**
+ * Sends transactional emails through the Brevo REST API (v3).
+ * All public methods are async so the HTTP request is never blocked on mail
+ * delivery; the order/admin variants are read-only transactional so lazy
+ * associations can be initialized while building the email body.
+ */
 @Service
 public class EmailService {
 
-    private ProductService productService;
-
-
-    private ImageService imageService;
-
-    private UserRepo userRepo;
-
-    // @Value("${resend.from}")
-    // private String from;
+    private final ProductService productService;
+    private final ImageService imageService;
+    private final UserRepo userRepo;
+    private final WebClient webClient;
 
     @Autowired
     private TemplateEngine templateEngine;
-    @Autowired
-    private JavaMailSender mailSender;
 
     @Value("${brevo.sender.email:teodor.binisor@gmail.com}")
     private String senderEmail;
 
-    public EmailService(
-                        ProductService productService, ImageService imageService, UserRepo userRepo) {
+    @Value("${brevo.sender.name:TerraBucovina}")
+    private String senderName;
+
+    @Value("${brevo.api.key:}")
+    private String apiKey;
+
+    @Value("${brevo.api.url:https://api.brevo.com/v3/smtp/email}")
+    private String apiUrl;
+
+    public EmailService(ProductService productService, ImageService imageService, UserRepo userRepo,
+                        WebClient.Builder webClientBuilder) {
         this.productService = productService;
         this.imageService = imageService;
         this.userRepo = userRepo;
+        this.webClient = webClientBuilder.build();
     }
 
-
-
- 
+    /**
+     * Core send: builds the Brevo payload and POSTs it. Failures are logged, not
+     * rethrown, so a mail problem never breaks the caller's flow.
+     */
     @Async
-    public void sendEmail(String to, String subject, String body, String provider) {
-
+    public void sendEmail(String to, String toName, String subject, String body) {
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom(senderEmail);
-            helper.setTo(to);
-            helper.setSubject(subject);
+            BrevoSendEmailRequest payload = new BrevoSendEmailRequest();
+            payload.sender = new BrevoSendEmailRequest.Sender(senderName, senderEmail);
+            payload.to = List.of(new BrevoSendEmailRequest.To(to, toName));
+            payload.subject = subject;
+            payload.htmlContent = body;
 
-            helper.setText(body, true);
-            mailSender.send(message);
-            System.out.println("Email sent successfully to " + to);
+            this.webClient.post()
+                    .uri(apiUrl)
+                    .header("api-key", apiKey)
+                    .header("Content-Type", "application/json")
+                    .bodyValue(payload)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
         } catch (Exception e) {
             System.err.println("CRITICAL ERROR IN ASYNC EMAIL: " + e.getMessage());
-            e.printStackTrace();
         }
-
     }
 
-
-
-    @Async
-    public void sendOrderConfirmationEmail(Order order) {
+    private List<EmailProducts> buildProductDetails(Order order) {
         List<EmailProducts> productDetails = new ArrayList<>();
-
         for (OrderProduct op : order.getProducts()) {
-            Product product = productService.getProductById(op.getProduct().getId());
+            ProductResponseDTO product = productService.getProductById(op.getProduct().getId());
             Image image = imageService.findPrimaryByProduct_Id(op.getProduct().getId());
 
-            EmailProducts dto = new EmailProducts(
-                    product.getName(),
-                    image != null ? "http://localhost:8080" + image.getImageUrl() : "",
+            productDetails.add(new EmailProducts(
+                    product.name(),
+                    image != null ? image.getImageUrl() : "",
                     op.getQuantity(),
-                    product.getPrice()
-            );
-
-            productDetails.add(dto);
+                    product.price()
+            ));
         }
+        return productDetails;
+    }
 
-        String domainPart = order.getEmail().split("@")[1];
-        String provider = domainPart.split("\\.")[0];
+    @Async
+    @Transactional(readOnly = true)
+    public void sendOrderConfirmationEmail(Order order) {
+        List<EmailProducts> productDetails = buildProductDetails(order);
 
         Context context = new Context();
         context.setVariable("fullName", order.getFullName());
         context.setVariable("products", productDetails);
-
-
+        context.setVariable("totalPrice", order.getTotalPrice());
         context.setVariable("address", order.getAddress());
         context.setVariable("city", order.getCity());
         context.setVariable("county", order.getCounty());
@@ -112,139 +113,113 @@ public class EmailService {
 
         String htmlBody = templateEngine.process("orderConfirmation", context);
 
-        sendEmail(
-                order.getEmail(),
-                "Confirmare comanda - Terra Bucovina",
-                htmlBody,
-                provider
-        );
+        sendEmail(order.getEmail(), order.getFullName(), "Confirmare comanda - Terra Bucovina", htmlBody);
     }
 
-
     @Async
+    @Transactional(readOnly = true)
     public void sendOrderStatusUpdateEmail(Order order) {
-        List<EmailProducts> productDetails = new ArrayList<>();
-
-        for (OrderProduct op : order.getProducts()) {
-            Product product = productService.getProductById(op.getProduct().getId());
-            Image image = imageService.findPrimaryByProduct_Id(op.getProduct().getId());
-
-            EmailProducts dto = new EmailProducts(
-                    product.getName(),
-                    image != null ? "http://localhost:8080" + image.getImageUrl() : "",
-                    op.getQuantity(),
-                    product.getPrice()
-            );
-
-            productDetails.add(dto);
-        }
-
-
-        String domainPart = order.getEmail().split("@")[1];
-        String provider = domainPart.split("\\.")[0];
+        List<EmailProducts> productDetails = buildProductDetails(order);
 
         Context context = new Context();
         context.setVariable("fullName", order.getFullName());
         context.setVariable("orderId", order.getId());
         context.setVariable("status", order.getStatus());
+        context.setVariable("totalPrice", order.getTotalPrice());
         context.setVariable("products", productDetails);
-
-        System.out.println("PRODUSE"+ productDetails.size());
 
         String htmlBody = templateEngine.process("orderStatusUpdate", context);
 
-        sendEmail(
-                order.getEmail(),
-                "Status comanda – Terra Bucovina",
-                htmlBody,
-                provider
-        );
+        sendEmail(order.getEmail(), order.getFullName(), "Status comanda – Terra Bucovina", htmlBody);
     }
 
-
     @Async
+    @Transactional(readOnly = true)
     public void sendNewOrderNotificationToAdmins(Order order) {
-        List<EmailProducts> productDetails = new ArrayList<>();
-
-        for (OrderProduct op : order.getProducts()) {
-            Product product = productService.getProductById(op.getProduct().getId());
-            Image image = imageService.findPrimaryByProduct_Id(op.getProduct().getId());
-
-            EmailProducts dto = new EmailProducts(
-                    product.getName(),
-                    image != null ? "http://localhost:8080" + image.getImageUrl() : "",
-                    op.getQuantity(),
-                    product.getPrice()
-            );
-
-            productDetails.add(dto);
-        }
-
-
+        List<EmailProducts> productDetails = buildProductDetails(order);
         List<User> adminUsers = userRepo.findAllByRoles(Role.ADMIN);
 
-
-
         for (User admin : adminUsers) {
-            String email = admin.getEmail();
-            String domainPart = email.split("@")[1];
-            String provider = domainPart.split("\\.")[0];
-
-
             Context context = new Context();
             context.setVariable("fullName", order.getFullName());
             context.setVariable("email", order.getEmail());
             context.setVariable("phone", order.getPhone());
-
             context.setVariable("country", order.getCountry());
             context.setVariable("county", order.getCounty());
             context.setVariable("city", order.getCity());
             context.setVariable("postalCode", order.getPostalCode());
             context.setVariable("address", order.getAddress());
-
             context.setVariable("deliveryMethod", order.getDeliveryMethod());
             context.setVariable("paymentMethod", order.getPaymentMethod());
-
             context.setVariable("isCompanyInvoice", order.getIsCompanyInvoice());
             context.setVariable("cui", order.getCui());
-
+            context.setVariable("totalPrice", order.getTotalPrice());
             context.setVariable("products", productDetails);
             context.setVariable("orderId", order.getId());
 
             String htmlBody = templateEngine.process("adminOrderNotification", context);
-            sendEmail(email, "Nouă comandă plasată – Terra Bucovina", htmlBody, provider);
+            sendEmail(admin.getEmail(), admin.getUsername(), "Nouă comandă plasată – Terra Bucovina", htmlBody);
         }
     }
 
     @Async
-    public void sendContactResponseEmail(ContactUsMessages message) {
-        String domainPart = message.getEmail().split("@")[1];
-        String provider = domainPart.split("\\.")[0];
+    public void sendMonthlySummaryToAdmins(MonthlySummaryResponseDTO summary) {
+        List<User> adminUsers = userRepo.findAllByRoles(Role.ADMIN);
 
+        for (User admin : adminUsers) {
+            Context context = new Context();
+            context.setVariable("adminName", admin.getUsername());
+            context.setVariable("monthLabel", summary.monthLabel());
+            context.setVariable("totalOrders", summary.totalOrders());
+            context.setVariable("totalRevenue", summary.totalRevenue());
+            context.setVariable("totalProducts", summary.totalProducts());
+            context.setVariable("totalUsers", summary.totalUsers());
+            context.setVariable("topProducts", summary.topProducts());
+
+            String htmlBody = templateEngine.process("adminMonthlySummary", context);
+            sendEmail(admin.getEmail(), admin.getUsername(),
+                    "Rezumat lunar " + summary.monthLabel() + " – Terra Bucovina", htmlBody);
+        }
+    }
+
+    @Async
+    public void sendAccountConfirmationEmail(String to, String name, String confirmationUrl) {
+        Context context = new Context();
+        context.setVariable("fullName", name);
+        context.setVariable("confirmationUrl", confirmationUrl);
+
+        String htmlBody = templateEngine.process("accountConfirmation", context);
+
+        sendEmail(to, name, "Confirmă adresa de email - Terra Bucovina", htmlBody);
+    }
+
+    @Async
+    public void sendPasswordChangeConfirmationEmail(String to, String name, String confirmationUrl) {
+        Context context = new Context();
+        context.setVariable("fullName", name);
+        context.setVariable("confirmationUrl", confirmationUrl);
+
+        String htmlBody = templateEngine.process("passwordChangeConfirmation", context);
+
+        sendEmail(to, name, "Confirmă schimbarea parolei - Terra Bucovina", htmlBody);
+    }
+
+    @Async
+    public void sendContactResponseEmail(ContactUsMessages message) {
         Context context = new Context();
         context.setVariable("fullName", message.getName());
         context.setVariable("messageContent", message.getMessage());
 
         String htmlBody = templateEngine.process("addedMessageToContactUs", context);
 
-        sendEmail(
-                message.getEmail(),
-                "Masajul– Terra Bucovina",
-                htmlBody,
-                provider
-        );
+        sendEmail(message.getEmail(), message.getName(), "Masajul– Terra Bucovina", htmlBody);
     }
 
     @Async
     public void sendNewContactMessageToAdmins(ContactUsMessages message) {
-
         List<User> adminUsers = userRepo.findAllByRoles(Role.ADMIN);
 
         for (User admin : adminUsers) {
-            String email = admin.getEmail();
-            String domainPart = email.split("@")[1];
-            String provider = domainPart.split("\\.")[0];
-
             Context context = new Context();
             context.setVariable("fullName", message.getName());
             context.setVariable("email", message.getEmail());
@@ -252,16 +227,7 @@ public class EmailService {
 
             String htmlBody = templateEngine.process("adminNewMessage", context);
 
-            sendEmail(
-                    email,
-                    "Mesaj nou primit - Terra Bucovina",
-                    htmlBody,
-                    provider
-            );
+            sendEmail(admin.getEmail(), admin.getUsername(), "Mesaj nou primit - Terra Bucovina", htmlBody);
         }
     }
-
-
-
-
 }

@@ -20,11 +20,11 @@ public class EmailController {
 
     @PostMapping("/send")
     public ResponseEntity<String> sendEmail(@RequestParam String to,
+                                            @RequestParam String customerName,
                                             @RequestParam String subject,
-                                            @RequestParam String body,
-                                            @RequestParam String provider) {
-        emailService.sendEmail(to, subject, body, provider);
-        return ResponseEntity.ok("Email trimis prin " + provider);
+                                            @RequestParam String body) {
+        emailService.sendEmail(to, customerName, subject, body);
+        return ResponseEntity.ok("Email trimis către " + to);
     }
 
 

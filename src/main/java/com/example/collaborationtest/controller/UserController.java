@@ -1,10 +1,13 @@
 package com.example.collaborationtest.controller;
 
+import com.example.collaborationtest.dto.user.UserRequestDTO;
+import com.example.collaborationtest.dto.user.UserResponseDTO;
 import com.example.collaborationtest.enums.Role;
-import com.example.collaborationtest.model.User;
-import com.example.collaborationtest.repository.UserRepo;
 import com.example.collaborationtest.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,42 +23,38 @@ public class UserController {
         this.userService = userService;
     }
 
-
-//    @PostMapping("/login")
-//    public String login(@RequestBody User user) {
-//        System.out.println("login");
-//        return userService.verify(user);
-//    }
-
     @GetMapping("/users")
-    public List<User> getUsers() {
-        return userService.getUsers();
+    public ResponseEntity<List<UserResponseDTO>> getUsers() {
+        return ResponseEntity.ok(userService.getUsers());
     }
 
     @GetMapping("/user/{id}")
-    public User getUserById(@PathVariable int id) {
-        return userService.getUserById(id);
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable int id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PostMapping("/addUser")
-    public User addUser(@RequestBody User user) {
-        user.setId(0);
-        return userService.createUser(user);
+    public ResponseEntity<UserResponseDTO> addUser(@Valid @RequestBody UserRequestDTO request) {
+        UserResponseDTO created = userService.createUser(request);
+        if (created == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/userId/{email}")
-    public int getUserByName(@PathVariable String email) {
-        return userService.getIdByEmail(email);
+    public ResponseEntity<Integer> getUserByName(@PathVariable String email) {
+        return ResponseEntity.ok(userService.getIdByEmail(email));
     }
 
     @GetMapping("/getRole/{name}")
-    public Set<Role> getRole(@PathVariable String name) {
-        return userService.getRole(name);
+    public ResponseEntity<Set<Role>> getRole(@PathVariable String name) {
+        return ResponseEntity.ok(userService.getRole(name));
     }
 
     @DeleteMapping("/user/delete/{email:.+}")
-    public void deleteUser(@PathVariable String email) {
-        System.out.println("Trying to delete user with email: " + email);
+    public ResponseEntity<Void> deleteUser(@PathVariable String email) {
         userService.deleteUser(email);
+        return ResponseEntity.noContent().build();
     }
 }

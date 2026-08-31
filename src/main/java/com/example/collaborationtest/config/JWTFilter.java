@@ -4,6 +4,7 @@ import com.example.collaborationtest.service.JWTService;
 import com.example.collaborationtest.service.MyUserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,20 @@ public class JWTFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
 
+        // Prefer the Authorization header; fall back to the access_token cookie.
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-            username = jwtService.extractUsername(token);
+        } else {
+            token = extractTokenFromCookie(request);
+        }
+
+        if (token != null) {
+            try {
+                username = jwtService.extractUsername(token);
+            } catch (Exception e) {
+                // Malformed/invalid token — leave the request unauthenticated.
+                username = null;
+            }
         }
 
 
@@ -58,5 +70,16 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String extractTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("access_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

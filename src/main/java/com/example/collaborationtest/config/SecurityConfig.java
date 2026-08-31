@@ -2,6 +2,7 @@ package com.example.collaborationtest.config;
 
 import com.example.collaborationtest.service.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,6 +25,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -35,6 +37,9 @@ public class SecurityConfig {
 
 
     private final JWTFilter jwtFilter;
+
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
 
     public SecurityConfig(JWTFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
@@ -52,11 +57,12 @@ public class SecurityConfig {
                                     .requestMatchers(HttpMethod.GET, "/api/products/get/**", "/api/products/reviews/**", "/api/products/images/get/**", "/images/**",
                                             "/api/products/reviews/get/all", "/api/products/reviews/get/allByProductId/**", "/userId/*", "/user/**", "/api/products/plants/getAll").permitAll()
                                     .requestMatchers("/api/auth/**", "/api/products/images/auth/**", "/user/delete/**", "/api/orders/add", "/api/orders/can-review/**",
-                                            "/api/contact/us/add", "/api/categories/get/all").permitAll()
+                                            "/api/contact/us/add", "/api/categories/get/all", "/api/chat").permitAll()
 
-                                    .requestMatchers("/api/products/admin/**", "/api/orders/get/all", "/api/orders/updateStatus/**", "/api/contact/us/admin/**", "/api/products/plants/admin/**", "/api/categories/add").hasRole("ADMIN")
+                                    .requestMatchers("/api/admin/**", "/api/products/admin/**", "/api/orders/get/all/**", "/api/orders/updateStatus/**", "/api/contact/us/admin/**", "/api/products/plants/admin/**", "/api/categories/add").hasRole("ADMIN")
 
-                                    .requestMatchers("/api/user/**", "/api/products/reviews/add", "/api/orders/get/byUserId/**").hasRole("USER")
+                                    .requestMatchers("/api/user/**", "/api/products/reviews/add", "/api/products/reviews/update/**",
+                                            "/api/products/reviews/delete/**", "/api/orders/get/byUserId/**").hasRole("USER")
 
                                     .anyRequest().authenticated())
                     .httpBasic(AbstractHttpConfigurer::disable) 
@@ -98,9 +104,10 @@ public class SecurityConfig {
 @Bean
 public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration c = new CorsConfiguration();
-    c.setAllowedOrigins(List.of(
-        "https://terra-bucovina-frontend-2nus-irinas-projects-f1aedf43.vercel.app"
-    ));
+    c.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
+            .map(String::trim)
+            .filter(o -> !o.isEmpty())
+            .toList());
     c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
     c.setAllowedHeaders(List.of("*"));
     c.setExposedHeaders(List.of("Authorization"));

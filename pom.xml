@@ -29,16 +29,26 @@
     <properties>
         <java.version>17</java.version>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>2.46.7</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.12.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.resend</groupId>
-            <artifactId>resend-java</artifactId>
-            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -87,10 +97,17 @@
         </dependency>
 
 
-      <dependency>
+<!--      <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-mail</artifactId>-->
+<!--        </dependency>-->
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
+
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

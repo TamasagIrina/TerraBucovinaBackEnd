@@ -1,9 +1,12 @@
 package com.example.collaborationtest.controller;
 
+import com.example.collaborationtest.dto.contact.ContactUsMessagesRequestDTO;
+import com.example.collaborationtest.dto.contact.ContactUsMessagesResponseDTO;
 import com.example.collaborationtest.enums.MessageStatus;
-import com.example.collaborationtest.model.ContactUsMessages;
 import com.example.collaborationtest.service.ContactUsMessagesService;
 import com.example.collaborationtest.service.EmailService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,47 +25,41 @@ public class ContactUsMessagesController {
     }
 
     @GetMapping("/admin/get/all")
-    public List<ContactUsMessages> getAllContactUsMessages() {
-        return contactUsMessagesService.getContactUsMessages();
+    public ResponseEntity<List<ContactUsMessagesResponseDTO>> getAllContactUsMessages() {
+        return ResponseEntity.ok(contactUsMessagesService.getContactUsMessages());
     }
 
     @PutMapping("/add")
-    public ContactUsMessages addContactUsMessages(@RequestBody ContactUsMessages contactUsMessages) {
-        ContactUsMessages messageAdded= contactUsMessagesService.addContactUsMessage(contactUsMessages);
-        if(messageAdded!=null) {
-            this.emailService.sendContactResponseEmail(messageAdded);
-            this.emailService.sendNewContactMessageToAdmins(messageAdded);
-        }
-        return messageAdded;
+    public ResponseEntity<ContactUsMessagesResponseDTO> addContactUsMessages(
+            @Valid @RequestBody ContactUsMessagesRequestDTO request) {
+        // Persisting also fires the confirmation + admin-notification emails.
+        return ResponseEntity.status(HttpStatus.CREATED).body(contactUsMessagesService.addContactUsMessage(request));
     }
 
     @PatchMapping("/admin/update/status")
-    public ContactUsMessages updateContactUsMessages(   @RequestParam int id,
-                                                        @RequestParam MessageStatus status,
-                                                        @RequestParam String message) {
-        ContactUsMessages updateMessage= contactUsMessagesService.updateStatus(id, status);
+    public ResponseEntity<ContactUsMessagesResponseDTO> updateContactUsMessages(@RequestParam int id,
+                                                                                @RequestParam MessageStatus status,
+                                                                                @RequestParam String message) {
+        ContactUsMessagesResponseDTO updateMessage = contactUsMessagesService.updateStatus(id, status);
         if (updateMessage != null) {
 
-            String domainPart = updateMessage.getEmail().split("@")[1];
-            String provider = domainPart.split("\\.")[0];
-            String emailContent =  """
+            String emailContent = """
                                     <html>
                                         <head>
                                             <meta charset="UTF-8">
                                         </head>
                                         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                                             <h2 style="color: #2c3e50;"><b>%s</b>!</h2>
-                                            
+
                                             <p style="margin-top: 30px;">Echipa Terra Bucovina</p>
                                         </body>
                                     </html>
                                 """.formatted(message);
 
-            emailService.sendEmail(updateMessage.getEmail(), "Raspuns la mesaj- Terra Bucovina", emailContent, provider);
+            emailService.sendEmail(updateMessage.email(), updateMessage.name(),
+                    "Raspuns la mesaj- Terra Bucovina", emailContent);
 
         }
-        return updateMessage;
+        return ResponseEntity.ok(updateMessage);
     }
-
-
 }
