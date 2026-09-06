@@ -205,6 +205,17 @@ public class EmailService {
     }
 
     @Async
+    public void sendPasswordResetEmail(String to, String name, String confirmationUrl) {
+        Context context = new Context();
+        context.setVariable("fullName", name);
+        context.setVariable("confirmationUrl", confirmationUrl);
+
+        String htmlBody = templateEngine.process("passwordResetRequest", context);
+
+        sendEmail(to, name, "Resetează parola - Terra Bucovina", htmlBody);
+    }
+
+    @Async
     public void sendContactResponseEmail(ContactUsMessages message) {
         Context context = new Context();
         context.setVariable("fullName", message.getName());

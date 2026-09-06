@@ -46,7 +46,16 @@ public class PlantController {
         return ResponseEntity.status(HttpStatus.CREATED).body(plantService.addPlant(plant, file));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PutMapping(value = "/admin/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PlantResponseDTO> updatePlant(
+            @PathVariable int id,
+            @Valid @RequestPart("plant") PlantRequestDTO plant,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+        return ResponseEntity.ok(plantService.updatePlant(id, plant, file));
+    }
+
+    @DeleteMapping("/admin/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
         plantService.deletePlant(id);
         return ResponseEntity.noContent().build();

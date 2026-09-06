@@ -28,6 +28,21 @@ public class PlantMapper {
                 .build();
     }
 
+    /**
+     * Copies mutable scalar fields from a request payload onto an existing,
+     * managed {@link Plant}. The image (if a new one is uploaded) and the
+     * product association are handled by the caller.
+     */
+    public void updateEntity(Plant plant, PlantRequestDTO dto) {
+        if (plant == null || dto == null) {
+            return;
+        }
+        plant.setName(dto.name());
+        plant.setShortDescription(dto.shortDescription());
+        plant.setLongDescription(dto.longDescription());
+        plant.setPlantMessage(dto.plantMessage());
+    }
+
     public PlantResponseDTO toResponse(Plant plant) {
         if (plant == null) {
             return null;

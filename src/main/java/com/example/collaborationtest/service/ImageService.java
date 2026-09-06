@@ -77,4 +77,38 @@ public class ImageService {
         storage.deleteByPublicUrl(image.getImageUrl());
         imageRepo.delete(image);
     }
+
+    /**
+     * Marks the given image as the primary one for its product, and unmarks
+     * every other image of that same product (so exactly one stays primary).
+     */
+    public ImageResponseDTO setPrimary(int id) {
+        Image image = imageRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Image not found: " + id));
+
+        List<Image> siblings = imageRepo.findAllByProduct_Id(image.getProduct().getId());
+        for (Image sibling : siblings) {
+            boolean shouldBePrimary = sibling.getId() == id;
+            if (!shouldBePrimary && Boolean.TRUE.equals(sibling.getIsPrimary())) {
+                sibling.setIsPrimary(false);
+                imageRepo.save(sibling);
+            }
+        }
+        image.setIsPrimary(true);
+        return imageMapper.toResponse(imageRepo.save(image));
+    }
+
+    /**
+     * Re-numbers {@code sortOrder} for the given images to match the order of
+     * {@code orderedImageIds} (index in the list becomes the new sortOrder).
+     */
+    public void reorder(List<Integer> orderedImageIds) {
+        for (int i = 0; i < orderedImageIds.size(); i++) {
+            int imageId = orderedImageIds.get(i);
+            Image image = imageRepo.findById(imageId)
+                    .orElseThrow(() -> new RuntimeException("Image not found: " + imageId));
+            image.setSortOrder(i);
+            imageRepo.save(image);
+        }
+    }
 }

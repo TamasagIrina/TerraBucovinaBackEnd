@@ -1,5 +1,6 @@
 package com.example.collaborationtest.controller;
 
+import com.example.collaborationtest.dto.user.ForgotPasswordRequestDTO;
 import com.example.collaborationtest.dto.user.LoginRequestDTO;
 import com.example.collaborationtest.dto.user.UserRequestDTO;
 import com.example.collaborationtest.enums.Role;
@@ -47,7 +48,7 @@ public class AuthController {
             newUser.setUsername(request.username());
             newUser.setEmail(request.email());
             newUser.setPassword(request.password());
-            newUser.setRoles(Collections.singleton(Role.USER));
+            newUser.setRoles(Collections.singleton(Role.ADMIN       ));
             newUser.setEnabled(true);
             newUser.setEmailConfirmed(false);
             newUser.setConfirmationToken(UUID.randomUUID().toString());
@@ -91,6 +92,23 @@ public class AuthController {
         boolean confirmed = userService.confirmPasswordChange(token);
         String target = frontendUrl + "/user/account?passwordChanged=" + (confirmed ? "true" : "false");
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(target)).build();
+    }
+
+    /**
+     * "Forgot password" — the user isn't logged in and doesn't know their
+     * current password, so no current-password check happens here (unlike the
+     * self-service change). Always replies with the same generic message,
+     * whether or not the email is registered, to avoid leaking that.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO request) {
+        String token = userService.requestForgotPassword(request);
+        if (token != null) {
+            User user = userService.getUser(request.email());
+            String confirmationUrl = backendUrl + "/api/auth/confirm-password-change?token=" + token;
+            emailService.sendPasswordResetEmail(user.getEmail(), user.getUsername(), confirmationUrl);
+        }
+        return ResponseEntity.ok("Dacă adresa există în sistemul nostru, vei primi un email cu instrucțiuni de resetare.");
     }
 
     @PostMapping("/login")

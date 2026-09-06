@@ -1,5 +1,6 @@
 package com.example.collaborationtest.service;
 
+import com.example.collaborationtest.dto.user.ForgotPasswordRequestDTO;
 import com.example.collaborationtest.dto.user.PasswordChangeRequestDTO;
 import com.example.collaborationtest.dto.user.UserRequestDTO;
 import com.example.collaborationtest.dto.user.UserResponseDTO;
@@ -178,6 +179,29 @@ public class UserService {
 
         if (!encoder.matches(dto.currentPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parola actuală este incorectă");
+        }
+
+        String token = UUID.randomUUID().toString();
+        user.setPendingPassword(encoder.encode(dto.newPassword()));
+        user.setPasswordResetToken(token);
+        user.setPasswordResetTokenExpiry(LocalDateTime.now().plusMinutes(30));
+        userRepo.save(user);
+
+        return token;
+    }
+
+    /**
+     * Starts a "forgot password" flow: unlike {@link #requestPasswordChange},
+     * this does NOT verify the current password (a locked-out user doesn't
+     * have it) — knowing the account's email is enough to stage a new one.
+     * Returns {@code null} (not an exception) when no account matches the
+     * email, so the controller can reply with the same generic message either
+     * way and avoid leaking which emails are registered.
+     */
+    public String requestForgotPassword(ForgotPasswordRequestDTO dto) {
+        User user = getUser(dto.email());
+        if (user == null) {
+            return null;
         }
 
         String token = UUID.randomUUID().toString();

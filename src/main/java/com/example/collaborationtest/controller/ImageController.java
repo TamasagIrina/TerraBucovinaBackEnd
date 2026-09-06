@@ -48,4 +48,15 @@ public class ImageController {
         imageService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/admin/set-primary/{id}")
+    public ResponseEntity<ImageResponseDTO> setPrimary(@PathVariable int id) {
+        return ResponseEntity.ok(imageService.setPrimary(id));
+    }
+
+    @PutMapping("/admin/reorder")
+    public ResponseEntity<Void> reorder(@RequestBody List<Integer> orderedImageIds) {
+        imageService.reorder(orderedImageIds);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -63,6 +63,25 @@ public class PlantService {
         return plantMapper.toResponse(plantRepo.save(saved));
     }
 
+    /**
+     * Updates a plant's text fields. If a new file is uploaded, the old image
+     * is removed from R2 and replaced; otherwise the existing image is kept.
+     */
+    public PlantResponseDTO updatePlant(int id, PlantRequestDTO request, MultipartFile file) throws IOException {
+        Plant plant = plantRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Plant not found: " + id));
+
+        plantMapper.updateEntity(plant, request);
+
+        if (file != null && !file.isEmpty()) {
+            storage.deleteByPublicUrl(plant.getImageUrl());
+            var stored = storage.saveProductImage(plant.getProduct().getId(), file);
+            plant.setImageUrl(stored.publicUrl());
+        }
+
+        return plantMapper.toResponse(plantRepo.save(plant));
+    }
+
     public void deletePlant(int id) {
         Plant oldPlant = plantRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Plant not found: " + id));
