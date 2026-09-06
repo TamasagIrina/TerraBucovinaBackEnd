@@ -48,7 +48,7 @@ public class AuthController {
             newUser.setUsername(request.username());
             newUser.setEmail(request.email());
             newUser.setPassword(request.password());
-            newUser.setRoles(Collections.singleton(Role.ADMIN       ));
+            newUser.setRoles(Collections.singleton(Role.USER));
             newUser.setEnabled(true);
             newUser.setEmailConfirmed(false);
             newUser.setConfirmationToken(UUID.randomUUID().toString());
