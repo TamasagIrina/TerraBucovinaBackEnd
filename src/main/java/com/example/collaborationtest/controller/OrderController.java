@@ -69,9 +69,4 @@ public class OrderController {
         }
         return ResponseEntity.ok(order);
     }
-
-    @GetMapping("/can-review/{userId}/{productId}")
-    public ResponseEntity<Boolean> canUserReview(@PathVariable int userId, @PathVariable int productId) {
-        return ResponseEntity.ok(orderService.hasUserPurchasedProduct(userId, productId));
-    }
 }

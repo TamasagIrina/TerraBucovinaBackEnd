@@ -5,7 +5,6 @@ import com.example.collaborationtest.dto.order.OrderResponseDTO;
 import com.example.collaborationtest.enums.OrderStatus;
 import com.example.collaborationtest.mapper.OrderMapper;
 import com.example.collaborationtest.model.Order;
-import com.example.collaborationtest.model.OrderProduct;
 import com.example.collaborationtest.model.User;
 import com.example.collaborationtest.dto.common.PageResponse;
 import com.example.collaborationtest.repository.OrderRepo;
@@ -113,19 +112,6 @@ public class OrderService {
         emailService.sendOrderStatusUpdateEmail(saved);
 
         return orderMapper.toResponse(saved);
-    }
-
-    public boolean hasUserPurchasedProduct(int userId, int productId) {
-        List<Order> orders = orderRepo.findByUserId(userId);
-
-        for (Order order : orders) {
-            for (OrderProduct orderProduct : order.getProducts()) {
-                if (orderProduct.getProduct().getId() == productId) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public void deleteOrder(int id) {
